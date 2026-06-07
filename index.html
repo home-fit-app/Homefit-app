@@ -15,43 +15,38 @@ body{background:#060e06;min-height:100vh;font-family:sans-serif;color:#e8f5e8}
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const React_useState = React.useState;
-const niveles = ["Principiante absoluto", "Algo de base", "Intermedio"];
-const objetivos = ["Perder peso", "Ganar musculo", "Mejorar resistencia", "Mas energia"];
-const tiempos = ["15 min", "30 min", "45 min", "60 min"];
-const diasOpc = ["2 dias", "3 dias", "4 dias", "5 dias"];
+var uu = React.useState;
+var niveles = ["Principiante absoluto", "Algo de base", "Intermedio"];
+var objetivos = ["Perder peso", "Ganar musculo", "Mejorar resistencia", "Mas energia"];
+var tiempos = ["15 min", "30 min", "45 min", "60 min"];
+var diasOpc = ["2 dias", "3 dias", "4 dias", "5 dias"];
 
 function Tag(props) {
-  var label = props.label;
-  var selected = props.selected;
-  var onClick = props.onClick;
-  var bg = selected ? "rgba(34,197,94,0.1)" : "transparent";
-  var border = selected ? "1.5px solid #22c55e" : "1.5px solid #2a3a2a";
-  var color = selected ? "#22c55e" : "#6b7f6b";
+  var bg = props.selected ? "rgba(34,197,94,0.1)" : "transparent";
+  var border = props.selected ? "1.5px solid #22c55e" : "1.5px solid #2a3a2a";
+  var color = props.selected ? "#22c55e" : "#6b7f6b";
   return React.createElement("button", {
-    onClick: onClick,
-    style: {padding:"10px 18px",borderRadius:"100px",border:border,background:bg,color:color,cursor:"pointer",fontSize:"14px",margin:"4px",fontFamily:"sans-serif"}
-  }, label);
+    onClick: props.onClick,
+    style: {padding:"10px 18px",borderRadius:"100px",border:border,background:bg,color:color,cursor:"pointer",fontSize:"14px",margin:"4px"}
+  }, props.label);
 }
 
 function App() {
-  var state1 = React_useState("perfil");
-  var step = state1[0]; var setStep = state1[1];
-  var state2 = React_useState({nivel:"",objetivo:"",tiempo:"",dias:"",nombre:""});
-  var form = state2[0]; var setForm = state2[1];
-  var state3 = React_useState("");
-  var plan = state3[0]; var setPlan = state3[1];
+  var s1 = uu("perfil"); var step = s1[0]; var setStep = s1[1];
+  var s2 = uu({nivel:"",objetivo:"",tiempo:"",dias:"",nombre:""}); var form = s2[0]; var setForm = s2[1];
+  var s3 = uu(""); var plan = s3[0]; var setPlan = s3[1];
   var completo = form.nivel && form.objetivo && form.tiempo && form.dias;
 
   function toggle(key, val) {
-    var newForm = Object.assign({}, form);
-    newForm[key] = form[key] === val ? "" : val;
-    setForm(newForm);
+    var f = Object.assign({}, form);
+    f[key] = form[key] === val ? "" : val;
+    setForm(f);
   }
 
   function generar() {
     setStep("generando");
-    fetch("/.netlify/functions/claude", {
+    var url = window.location.origin + "/.netlify/functions/claude";
+    fetch(url, {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
@@ -66,8 +61,8 @@ function App() {
       setPlan(data.content && data.content[0] ? data.content[0].text : "Error generando plan.");
       setStep("plan");
     })
-    .catch(function() {
-      setPlan("Error de conexion.");
+    .catch(function(e) {
+      setPlan("Error: " + e.message);
       setStep("plan");
     });
   }

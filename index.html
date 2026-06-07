@@ -47,7 +47,7 @@ function App() {
 
   function generar() {
     setStep("generando");
-    fetch("https://api.anthropic.com/v1/messages", {
+    fetch("/api/claude", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

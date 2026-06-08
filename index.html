@@ -15,11 +15,8 @@ body{background:#f0fdf4;min-height:100vh;font-family:'Inter',sans-serif;}
 .card{background:white;border-radius:20px;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
 .tag-btn{border:2px solid #e2e8f0;background:white;border-radius:50px;padding:10px 20px;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.2s;font-family:'Inter',sans-serif;}
 .tag-btn.active{border-color:#16a34a;background:#f0fdf4;color:#16a34a;}
-.tag-btn:hover{border-color:#16a34a;}
-.btn-primary{background:linear-gradient(135deg,#16a34a,#22c55e);color:white;border:none;border-radius:14px;padding:18px 32px;font-size:17px;font-weight:800;cursor:pointer;width:100%;font-family:'Inter',sans-serif;box-shadow:0 4px 15px rgba(22,163,74,0.4);transition:transform 0.2s;}
-.btn-primary:hover{transform:translateY(-2px);}
-.btn-primary:disabled{background:#e2e8f0;color:#94a3b8;box-shadow:none;cursor:not-allowed;transform:none;}
-@keyframes spin{to{transform:rotate(360deg)}}
+.btn-primary{background:linear-gradient(135deg,#16a34a,#22c55e);color:white;border:none;border-radius:14px;padding:18px 32px;font-size:17px;font-weight:800;cursor:pointer;width:100%;font-family:'Inter',sans-serif;box-shadow:0 4px 15px rgba(22,163,74,0.4);}
+.btn-primary:disabled{background:#e2e8f0;color:#94a3b8;box-shadow:none;cursor:not-allowed;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeIn 0.5s ease forwards;}
 </style>
@@ -37,111 +34,90 @@ var emojisNivel = {"Principiante absoluto":"🌱","Algo de base":"🌿","Interme
 var emojisTiempo = {"15 min":"⚡","30 min":"🎯","45 min":"💪","60 min":"🔥"};
 var emojisDias = {"2 dias":"🗓️","3 dias":"📅","4 dias":"💪","5 dias":"🔥"};
 
-var ejerciciosGif = [
-  {nombre:"Sentadillas",gif:"https://media.giphy.com/media/3o7TKwmnDgye5b6PBO/giphy.gif",series:"3x15 reps",emoji:"🦵"},
-  {nombre:"Flexiones",gif:"https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif",series:"3x10 reps",emoji:"💪"},
-  {nombre:"Plancha",gif:"https://media.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif",series:"3x30 seg",emoji:"🏋️"},
-  {nombre:"Burpees",gif:"https://media.giphy.com/media/23hPPMRcSHB515Sv0A/giphy.gif",series:"3x10 reps",emoji:"🔥"},
-  {nombre:"Zancadas",gif:"https://media.giphy.com/media/l0HlNQ03J5JxX6lva/giphy.gif",series:"3x12 reps",emoji:"🦶"},
-  {nombre:"Mountain Climbers",gif:"https://media.giphy.com/media/xT0xeMA62E1XIlup68/giphy.gif",series:"3x20 reps",emoji:"⚡"}
+var ejercicios = [
+  {nombre:"Sentadillas",img:"https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&q=80",desc:"Parate derecho, baja como si fueras a sentarte y sube. 3 series de 15 repeticiones, descansa 60 segundos entre series.",emoji:"🦵"},
+  {nombre:"Flexiones",img:"https://images.unsplash.com/photo-1598971639058-a537b1e0c03c?w=400&q=80",desc:"Apoya manos y pies en el suelo, baja el pecho y sube. 3 series de 10 repeticiones, descansa 60 segundos.",emoji:"💪"},
+  {nombre:"Plancha",img:"https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=400&q=80",desc:"Apoya antebrazos y pies, mantén el cuerpo recto. 3 series de 30 segundos, descansa 45 segundos.",emoji:"🏋️"},
+  {nombre:"Burpees",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=400&q=80",desc:"De pie, baja al suelo, haz una flexion y salta. 3 series de 8 repeticiones, descansa 90 segundos.",emoji:"🔥"},
+  {nombre:"Zancadas",img:"https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=400&q=80",desc:"Da un paso largo al frente, baja la rodilla trasera y sube. 3 series de 12 repeticiones por pierna.",emoji:"🦶"},
+  {nombre:"Mountain Climbers",img:"https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=400&q=80",desc:"En posicion de plancha, lleva las rodillas al pecho alternando rapidamente. 3 series de 20 repeticiones.",emoji:"⚡"}
 ];
 
 function Tag(props) {
-  var emoji = props.emoji || "";
-  return React.createElement("button", {
-    onClick: props.onClick,
-    className: "tag-btn" + (props.selected ? " active" : "")
-  }, emoji + " " + props.label);
+  return React.createElement("button",{onClick:props.onClick,className:"tag-btn"+(props.selected?" active":"")},props.emoji+" "+props.label);
 }
 
 function App() {
-  var s1 = uu("perfil"); var step = s1[0]; var setStep = s1[1];
-  var s2 = uu({nivel:"",objetivo:"",tiempo:"",dias:"",nombre:""}); var form = s2[0]; var setForm = s2[1];
-  var s3 = uu(""); var plan = s3[0]; var setPlan = s3[1];
-  var completo = form.nivel && form.objetivo && form.tiempo && form.dias;
+  var s1=uu("perfil");var step=s1[0];var setStep=s1[1];
+  var s2=uu({nivel:"",objetivo:"",tiempo:"",dias:"",nombre:""});var form=s2[0];var setForm=s2[1];
+  var s3=uu("");var plan=s3[0];var setPlan=s3[1];
+  var completo=form.nivel&&form.objetivo&&form.tiempo&&form.dias;
 
-  function toggle(key, val) {
-    var f = Object.assign({}, form);
-    f[key] = form[key] === val ? "" : val;
-    setForm(f);
-  }
+  function toggle(key,val){var f=Object.assign({},form);f[key]=form[key]===val?"":val;setForm(f);}
 
-  function generar() {
+  function generar(){
     setStep("generando");
-    fetch("/api/claude", {
+    fetch("/api/claude",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({messages:[{role:"user",content:"Eres entrenador personal experto. Crea plan semanal en casa sin equipo para: Nivel: "+form.nivel+", Objetivo: "+form.objetivo+", Tiempo: "+form.tiempo+", Dias: "+form.dias+". Organiza por dias con ejercicios especificos, series y repeticiones. Usa emojis para hacerlo motivador y energico."}]})
+      body:JSON.stringify({messages:[{role:"user",content:"Eres entrenador personal experto y motivador. Crea un plan semanal de entrenamiento en casa sin equipo para: Nivel: "+form.nivel+", Objetivo: "+form.objetivo+", Tiempo por sesion: "+form.tiempo+", Dias a la semana: "+form.dias+". IMPORTANTE: Escribe cada ejercicio de forma clara y sencilla asi: Nombre del ejercicio: cuantas series, cuantas repeticiones o cuanto tiempo, cuanto descansar. Ejemplo: Sentadillas: 3 series de 15 repeticiones, descansa 60 segundos. Organiza por dias. Usa emojis para motivar. Sin tablas ni simbolos raros."}]})
     })
-    .then(function(res){return res.json();})
-    .then(function(data){
-      setPlan(data.content&&data.content[0]?data.content[0].text:"Error generando plan.");
-      setStep("plan");
-    })
+    .then(function(r){return r.json();})
+    .then(function(d){setPlan(d.content&&d.content[0]?d.content[0].text:"Error.");setStep("plan");})
     .catch(function(e){setPlan("Error: "+e.message);setStep("plan");});
   }
 
   if(step==="generando"){
-    return React.createElement("div",{style:{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"24px",background:"#f0fdf4"}},
-      React.createElement("img",{src:"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80",style:{width:"200px",height:"200px",borderRadius:"50%",objectFit:"cover",boxShadow:"0 8px 30px rgba(22,163,74,0.3)"}}),
-      React.createElement("h2",{style:{fontSize:"24px",fontWeight:"800",color:"#16a34a"}},"Creando tu plan personalizado..."),
-      React.createElement("p",{style:{color:"#6b7280",fontSize:"16px"}},"La IA esta trabajando para ti 💪"),
-      React.createElement("div",{style:{width:"200px",height:"4px",background:"#dcfce7",borderRadius:"2px",overflow:"hidden"}},
-        React.createElement("div",{style:{width:"60%",height:"100%",background:"#16a34a",borderRadius:"2px",animation:"loading 1.5s ease infinite"}})
-      )
+    return React.createElement("div",{style:{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"24px",background:"#f0fdf4",padding:"20px"}},
+      React.createElement("img",{src:"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80",style:{width:"180px",height:"180px",borderRadius:"50%",objectFit:"cover",boxShadow:"0 8px 30px rgba(22,163,74,0.3)"}}),
+      React.createElement("h2",{style:{fontSize:"22px",fontWeight:"800",color:"#16a34a",textAlign:"center"}},"Creando tu plan personalizado..."),
+      React.createElement("p",{style:{color:"#6b7280",fontSize:"16px"}},"La IA esta trabajando para ti 💪")
     );
   }
 
   if(step==="plan"){
     return React.createElement("div",{className:"fade-in",style:{background:"#f0fdf4",minHeight:"100vh",padding:"20px"}},
       React.createElement("div",{style:{maxWidth:"720px",margin:"0 auto"}},
-        React.createElement("div",{className:"hero-bg",style:{borderRadius:"24px",padding:"32px",marginBottom:"24px",color:"white",textAlign:"center"}},
-          React.createElement("img",{src:"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80",style:{width:"100%",maxHeight:"200px",objectFit:"cover",borderRadius:"16px",marginBottom:"20px"}}),
-          React.createElement("h2",{style:{fontSize:"26px",fontWeight:"900",marginBottom:"8px"}},form.nombre?"🏆 Plan de "+form.nombre:"🏆 Tu plan personalizado"),
-          React.createElement("p",{style:{opacity:0.9,fontSize:"15px"}},"🎯 "+form.objetivo+" • ⏱️ "+form.tiempo+" • 📅 "+form.dias)
+        React.createElement("div",{className:"hero-bg",style:{borderRadius:"24px",padding:"28px",marginBottom:"24px",color:"white",textAlign:"center"}},
+          React.createElement("h2",{style:{fontSize:"24px",fontWeight:"900",marginBottom:"8px"}},form.nombre?"🏆 Plan de "+form.nombre:"🏆 Tu plan personalizado"),
+          React.createElement("p",{style:{opacity:0.9,fontSize:"14px"}},"🎯 "+form.objetivo+" • ⏱️ "+form.tiempo+" • 📅 "+form.dias)
         ),
         React.createElement("h3",{style:{fontSize:"18px",fontWeight:"800",color:"#15803d",marginBottom:"16px",textAlign:"center"}},"💪 Ejercicios de tu rutina"),
         React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:"16px",marginBottom:"24px"}},
-          ejerciciosGif.map(function(ej){
+          ejercicios.map(function(ej){
             return React.createElement("div",{key:ej.nombre,className:"card",style:{overflow:"hidden",border:"2px solid #dcfce7"}},
-              React.createElement("img",{src:ej.gif,style:{width:"100%",height:"160px",objectFit:"cover"}}),
-              React.createElement("div",{style:{padding:"12px"}},
-                React.createElement("h4",{style:{fontWeight:"800",color:"#15803d",fontSize:"14px",marginBottom:"4px"}},ej.emoji+" "+ej.nombre),
-                React.createElement("p",{style:{color:"#6b7280",fontSize:"12px"}},"💪 "+ej.series)
+              React.createElement("img",{src:ej.img,style:{width:"100%",height:"160px",objectFit:"cover"},onError:function(e){e.target.src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80";}}),
+              React.createElement("div",{style:{padding:"14px"}},
+                React.createElement("h4",{style:{fontWeight:"800",color:"#15803d",fontSize:"14px",marginBottom:"6px"}},ej.emoji+" "+ej.nombre),
+                React.createElement("p",{style:{color:"#6b7280",fontSize:"12px",lineHeight:"1.5"}},ej.desc)
               )
             );
           })
         ),
         React.createElement("div",{className:"card",style:{padding:"28px",marginBottom:"24px"}},
-          React.createElement("h3",{style:{fontSize:"18px",fontWeight:"800",color:"#15803d",marginBottom:"16px"}},"📋 Tu plan detallado"),
-          React.createElement("div",{style:{whiteSpace:"pre-wrap",lineHeight:"1.9",color:"#1f2937",fontSize:"14px"}},plan)
+          React.createElement("h3",{style:{fontSize:"18px",fontWeight:"800",color:"#15803d",marginBottom:"16px"}},"📋 Tu plan semanal completo"),
+          React.createElement("div",{style:{whiteSpace:"pre-wrap",lineHeight:"2",color:"#1f2937",fontSize:"14px"}},plan)
         ),
         React.createElement("div",{className:"card",style:{padding:"28px",marginBottom:"16px",textAlign:"center",background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"2px solid #86efac"}},
           React.createElement("div",{style:{fontSize:"48px",marginBottom:"12px"}},"🚀"),
           React.createElement("h3",{style:{fontSize:"20px",fontWeight:"800",color:"#15803d",marginBottom:"8px"}},"Nuevos planes cada semana"),
-          React.createElement("p",{style:{color:"#6b7280",fontSize:"14px",marginBottom:"24px",lineHeight:"1.6"}},"Suscribete y recibe planes personalizados, seguimiento de progreso y motivacion diaria. Sin contratos."),
-          React.createElement("button",{
-            onClick:function(){window.open("https://homefitai.lemonsqueezy.com/checkout/buy/1693890c-9744-4fa5-9970-2af687d25822","_blank");},
-            className:"btn-primary"
-          },"🎯 Suscribirme por $35,000/mes"),
+          React.createElement("p",{style:{color:"#6b7280",fontSize:"14px",marginBottom:"20px",lineHeight:"1.6"}},"Suscribete y recibe planes personalizados, seguimiento de progreso y motivacion diaria."),
+          React.createElement("button",{onClick:function(){window.open("https://homefitai.lemonsqueezy.com/checkout/buy/1693890c-9744-4fa5-9970-2af687d25822","_blank");},className:"btn-primary"},"🎯 Suscribirme por $35,000/mes"),
           React.createElement("p",{style:{color:"#9ca3af",fontSize:"12px",marginTop:"12px"}},"✓ Cancela cuando quieras  ✓ Sin compromisos")
         ),
-        React.createElement("button",{
-          onClick:function(){setStep("perfil");},
-          style:{width:"100%",padding:"14px",background:"white",border:"2px solid #e2e8f0",borderRadius:"14px",color:"#6b7280",cursor:"pointer",fontSize:"15px",fontWeight:"600",fontFamily:"Inter,sans-serif"}
-        },"← Crear otro plan")
+        React.createElement("button",{onClick:function(){setStep("perfil");},style:{width:"100%",padding:"14px",background:"white",border:"2px solid #e2e8f0",borderRadius:"14px",color:"#6b7280",cursor:"pointer",fontSize:"15px",fontWeight:"600",fontFamily:"Inter,sans-serif"}},"← Crear otro plan")
       )
     );
   }
 
   return React.createElement("div",{style:{background:"#f0fdf4",minHeight:"100vh"}},
-    React.createElement("div",{className:"hero-bg",style:{padding:"48px 24px 80px",textAlign:"center",color:"white",position:"relative",overflow:"hidden"}},
-      React.createElement("img",{src:"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80",style:{width:"100%",maxWidth:"500px",borderRadius:"20px",marginBottom:"24px",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}),
-      React.createElement("h1",{style:{fontSize:"clamp(28px,6vw,48px)",fontWeight:"900",marginBottom:"12px",lineHeight:1.1}},"Entrena en casa,"),
-      React.createElement("h1",{style:{fontSize:"clamp(28px,6vw,48px)",fontWeight:"900",marginBottom:"16px",lineHeight:1.1,opacity:0.9}},"sin excusas 🔥"),
-      React.createElement("p",{style:{fontSize:"18px",opacity:0.9,maxWidth:"480px",margin:"0 auto",lineHeight:1.6}},"La IA crea tu plan de entrenamiento personalizado en segundos.")
+    React.createElement("div",{className:"hero-bg",style:{padding:"48px 24px 80px",textAlign:"center",color:"white"}},
+      React.createElement("img",{src:"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80",style:{width:"100%",maxWidth:"460px",borderRadius:"20px",marginBottom:"24px",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}),
+      React.createElement("h1",{style:{fontSize:"clamp(28px,6vw,46px)",fontWeight:"900",marginBottom:"12px",lineHeight:1.1}},"Entrena en casa 🏠"),
+      React.createElement("h2",{style:{fontSize:"clamp(22px,4vw,36px)",fontWeight:"800",marginBottom:"20px",opacity:0.9}},"sin excusas 🔥"),
+      React.createElement("p",{style:{fontSize:"17px",opacity:0.9,maxWidth:"460px",margin:"0 auto",lineHeight:1.6}},"La IA crea tu plan de entrenamiento personalizado en segundos. Gratis.")
     ),
-    React.createElement("div",{style:{maxWidth:"600px",margin:"-40px auto 0",padding:"0 20px 60px",position:"relative"}},
+    React.createElement("div",{style:{maxWidth:"580px",margin:"-40px auto 0",padding:"0 20px 60px",position:"relative"}},
       React.createElement("div",{className:"card fade-in",style:{padding:"32px"}},
         React.createElement("h2",{style:{fontSize:"20px",fontWeight:"800",color:"#1f2937",marginBottom:"24px",textAlign:"center"}},"✨ Crea tu plan gratis"),
         React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"24px"}},
@@ -163,11 +139,7 @@ function App() {
               )
             );
           }),
-          React.createElement("button",{
-            onClick:function(){if(completo)generar();},
-            className:"btn-primary",
-            disabled:!completo
-          },completo?"🚀 Generar mi plan gratis":"Completa todas las opciones para continuar")
+          React.createElement("button",{onClick:function(){if(completo)generar();},className:"btn-primary",disabled:!completo},completo?"🚀 Generar mi plan gratis":"Completa todas las opciones para continuar")
         )
       ),
       React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginTop:"20px"}},

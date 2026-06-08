@@ -3,32 +3,46 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HomeFit AI</title>
+<title>HomeFit AI - Entrena en Casa</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#060e06;min-height:100vh;font-family:sans-serif;color:#e8f5e8}
+body{background:#f0fdf4;min-height:100vh;font-family:'Inter',sans-serif;}
+.hero-bg{background:linear-gradient(135deg,#16a34a 0%,#15803d 50%,#166534 100%);}
+.card{background:white;border-radius:20px;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+.tag-btn{border:2px solid #e2e8f0;background:white;border-radius:50px;padding:10px 20px;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.2s;font-family:'Inter',sans-serif;}
+.tag-btn.active{border-color:#16a34a;background:#f0fdf4;color:#16a34a;}
+.tag-btn:hover{border-color:#16a34a;}
+.btn-primary{background:linear-gradient(135deg,#16a34a,#22c55e);color:white;border:none;border-radius:14px;padding:18px 32px;font-size:17px;font-weight:800;cursor:pointer;width:100%;font-family:'Inter',sans-serif;box-shadow:0 4px 15px rgba(22,163,74,0.4);transition:transform 0.2s;}
+.btn-primary:hover{transform:translateY(-2px);}
+.btn-primary:disabled{background:#e2e8f0;color:#94a3b8;box-shadow:none;cursor:not-allowed;transform:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn 0.5s ease forwards;}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 var uu = React.useState;
-var niveles = ["Principiante absoluto", "Algo de base", "Intermedio"];
-var objetivos = ["Perder peso", "Ganar musculo", "Mejorar resistencia", "Mas energia"];
-var tiempos = ["15 min", "30 min", "45 min", "60 min"];
-var diasOpc = ["2 dias", "3 dias", "4 dias", "5 dias"];
+var niveles = ["Principiante absoluto","Algo de base","Intermedio"];
+var objetivos = ["Perder peso","Ganar musculo","Mejorar resistencia","Mas energia"];
+var tiempos = ["15 min","30 min","45 min","60 min"];
+var diasOpc = ["2 dias","3 dias","4 dias","5 dias"];
+var emojisObj = {"Perder peso":"🔥","Ganar musculo":"💪","Mejorar resistencia":"⚡","Mas energia":"✨"};
+var emojisNivel = {"Principiante absoluto":"🌱","Algo de base":"🌿","Intermedio":"🏋️"};
+var emojisTiempo = {"15 min":"⚡","30 min":"🎯","45 min":"💪","60 min":"🔥"};
+var emojisDias = {"2 dias":"🗓️","3 dias":"📅","4 dias":"💪","5 dias":"🔥"};
 
 function Tag(props) {
-  var bg = props.selected ? "rgba(34,197,94,0.1)" : "transparent";
-  var border = props.selected ? "1.5px solid #22c55e" : "1.5px solid #2a3a2a";
-  var color = props.selected ? "#22c55e" : "#6b7f6b";
+  var emoji = props.emoji || "";
   return React.createElement("button", {
     onClick: props.onClick,
-    style: {padding:"10px 18px",borderRadius:"100px",border:border,background:bg,color:color,cursor:"pointer",fontSize:"14px",margin:"4px"}
-  }, props.label);
+    className: "tag-btn" + (props.selected ? " active" : "")
+  }, emoji + " " + props.label);
 }
 
 function App() {
@@ -46,83 +60,115 @@ function App() {
   function generar() {
     setStep("generando");
     fetch("/api/claude", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        messages: [{
-          role: "user",
-          content: "Eres entrenador personal. Crea plan semanal en casa sin equipo para: Nivel: " + form.nivel + ", Objetivo: " + form.objetivo + ", Tiempo: " + form.tiempo + ", Dias: " + form.dias + ". Organiza por dias con ejercicios, series y repeticiones."
-        }]
-      })
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({messages:[{role:"user",content:"Eres entrenador personal experto. Crea plan semanal en casa sin equipo para: Nivel: "+form.nivel+", Objetivo: "+form.objetivo+", Tiempo: "+form.tiempo+", Dias: "+form.dias+". Organiza por dias con ejercicios especificos, series y repeticiones. Usa emojis para hacerlo motivador."}]})
     })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      setPlan(data.content && data.content[0] ? data.content[0].text : "Error: " + JSON.stringify(data));
+    .then(function(res){return res.json();})
+    .then(function(data){
+      setPlan(data.content&&data.content[0]?data.content[0].text:"Error generando plan.");
       setStep("plan");
     })
-    .catch(function(e) {
-      setPlan("Error: " + e.message);
-      setStep("plan");
-    });
+    .catch(function(e){setPlan("Error: "+e.message);setStep("plan");});
   }
 
-  if (step === "generando") {
-    return React.createElement("div", {style:{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"20px"}},
-      React.createElement("div", {style:{width:"60px",height:"60px",borderRadius:"50%",border:"2px solid #22c55e",borderTopColor:"transparent",animation:"spin 0.8s linear infinite"}}),
-      React.createElement("style", null, "@keyframes spin{to{transform:rotate(360deg)}}"),
-      React.createElement("p", {style:{color:"#22c55e",fontFamily:"monospace"}}, "Generando tu plan...")
+  if(step==="generando"){
+    return React.createElement("div",{style:{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"24px",background:"#f0fdf4"}},
+      React.createElement("div",{style:{fontSize:"64px",animation:"spin 1s linear infinite",display:"inline-block"}},"⚙️"),
+      React.createElement("h2",{style:{fontSize:"24px",fontWeight:"800",color:"#16a34a"}},"Creando tu plan personalizado..."),
+      React.createElement("p",{style:{color:"#6b7280",fontSize:"16px"}},"La IA está trabajando para ti 💪")
     );
   }
 
-  if (step === "plan") {
-    return React.createElement("div", {style:{maxWidth:"600px",margin:"0 auto",padding:"40px 20px"}},
-      React.createElement("h2", {style:{fontSize:"24px",marginBottom:"8px"}}, form.nombre ? "Plan de " + form.nombre : "Tu plan personalizado"),
-      React.createElement("p", {style:{color:"#6b7f6b",marginBottom:"24px"}}, form.objetivo + " - " + form.tiempo + " - " + form.dias),
-      React.createElement("div", {style:{background:"#0e1a0e",border:"1px solid #2a3a2a",borderRadius:"16px",padding:"24px",color:"#c8e6c8",fontSize:"14px",lineHeight:"1.8",whiteSpace:"pre-wrap",marginBottom:"24px"}}, plan),
-      React.createElement("div", {style:{background:"rgba(34,197,94,0.08)",border:"1px solid rgba(34,197,94,0.2)",borderRadius:"16px",padding:"24px",textAlign:"center",marginBottom:"16px"}},
-        React.createElement("h3", {style:{marginBottom:"8px"}}, "Plan de prueba gratis"),
-        React.createElement("p", {style:{color:"#6b7f6b",fontSize:"13px",marginBottom:"16px"}}, "Suscribete para nuevos planes cada semana"),
-        React.createElement("button", {
-          onClick: function() { window.open("https://homefitai.lemonsqueezy.com/checkout/buy/1693890c-9744-4fa5-9970-2af687d25822", "_blank"); },
-          style:{background:"linear-gradient(135deg,#16a34a,#22c55e)",color:"#fff",border:"none",borderRadius:"10px",padding:"14px 32px",fontSize:"15px",fontWeight:"600",cursor:"pointer",width:"100%"}
-        }, "Suscribirme por $35,000/mes")
-      ),
-      React.createElement("button", {onClick:function(){setStep("perfil");},style:{width:"100%",padding:"14px",background:"transparent",border:"1px solid #2a3a2a",borderRadius:"10px",color:"#3a5a3a",cursor:"pointer",fontSize:"14px"}}, "Crear otro plan")
+  if(step==="plan"){
+    return React.createElement("div",{className:"fade-in",style:{background:"#f0fdf4",minHeight:"100vh",padding:"20px"}},
+      React.createElement("div",{style:{maxWidth:"680px",margin:"0 auto"}},
+        React.createElement("div",{className:"hero-bg",style:{borderRadius:"24px",padding:"32px",marginBottom:"24px",color:"white",textAlign:"center"}},
+          React.createElement("div",{style:{fontSize:"48px",marginBottom:"12px"}},"🏆"),
+          React.createElement("h1",{style:{fontSize:"28px",fontWeight:"900",marginBottom:"8px"}}),
+          React.createElement("h2",{style:{fontSize:"22px",fontWeight:"800",marginBottom:"8px"}},form.nombre?"Plan de "+form.nombre:"Tu plan personalizado"),
+          React.createElement("p",{style:{opacity:0.9,fontSize:"15px"}},"🎯 "+form.objetivo+" • ⏱️ "+form.tiempo+" • 📅 "+form.dias)
+        ),
+        React.createElement("div",{className:"card",style:{padding:"28px",marginBottom:"24px",whiteSpace:"pre-wrap",lineHeight:"1.8",color:"#1f2937",fontSize:"14px"}},plan),
+        React.createElement("div",{className:"card",style:{padding:"28px",marginBottom:"16px",textAlign:"center",background:"linear-gradient(135deg,#f0fdf4,#dcfce7)"}},
+          React.createElement("div",{style:{fontSize:"48px",marginBottom:"16px"}},"🚀"),
+          React.createElement("h3",{style:{fontSize:"20px",fontWeight:"800",color:"#15803d",marginBottom:"8px"}},"¿Quieres planes nuevos cada semana?"),
+          React.createElement("p",{style:{color:"#6b7280",fontSize:"14px",marginBottom:"24px",lineHeight:"1.6"}},"Suscribete y recibe planes personalizados, seguimiento de progreso y motivacion diaria."),
+          React.createElement("button",{
+            onClick:function(){window.open("https://homefitai.lemonsqueezy.com/checkout/buy/1693890c-9744-4fa5-9970-2af687d25822","_blank");},
+            className:"btn-primary"
+          },"🎯 Suscribirme por $35,000/mes"),
+          React.createElement("p",{style:{color:"#9ca3af",fontSize:"12px",marginTop:"12px"}},"✓ Cancela cuando quieras  ✓ Sin compromisos")
+        ),
+        React.createElement("button",{
+          onClick:function(){setStep("perfil");},
+          style:{width:"100%",padding:"14px",background:"white",border:"2px solid #e2e8f0",borderRadius:"14px",color:"#6b7280",cursor:"pointer",fontSize:"15px",fontWeight:"600",fontFamily:"Inter,sans-serif"}
+        },"← Crear otro plan")
+      )
     );
   }
 
-  var campos = [
-    {key:"nivel",label:"Nivel de condicion fisica",opts:niveles},
-    {key:"objetivo",label:"Cual es tu objetivo?",opts:objetivos},
-    {key:"tiempo",label:"Tiempo por sesion",opts:tiempos},
-    {key:"dias",label:"Dias a la semana",opts:diasOpc}
-  ];
-
-  return React.createElement("div", {style:{maxWidth:"560px",margin:"0 auto",padding:"40px 20px"}},
-    React.createElement("div", {style:{textAlign:"center",marginBottom:"40px"}},
-      React.createElement("h1", {style:{fontSize:"36px",marginBottom:"12px"}},
-        "Tu plan de entreno, ",
-        React.createElement("span", {style:{color:"#22c55e"}}, "sin salir de casa")
-      ),
-      React.createElement("p", {style:{color:"#6b7f6b"}}, "Responde 4 preguntas y la IA crea tu plan")
+  return React.createElement("div",{style:{background:"#f0fdf4",minHeight:"100vh"}},
+    React.createElement("div",{className:"hero-bg",style:{padding:"48px 24px 64px",textAlign:"center",color:"white",position:"relative",overflow:"hidden"}},
+      React.createElement("div",{style:{fontSize:"64px",marginBottom:"16px"}},"🏠💪"),
+      React.createElement("h1",{style:{fontSize:"clamp(28px,6vw,48px)",fontWeight:"900",marginBottom:"16px",lineHeight:1.1}},"Entrena en casa,"),
+      React.createElement("h1",{style:{fontSize:"clamp(28px,6vw,48px)",fontWeight:"900",marginBottom:"16px",lineHeight:1.1,opacity:0.9}},"sin excusas 🔥"),
+      React.createElement("p",{style:{fontSize:"18px",opacity:0.9,maxWidth:"480px",margin:"0 auto 32px",lineHeight:1.6}},"La IA crea tu plan de entrenamiento personalizado en segundos. ¡Gratis!"),
+      React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:"24px",flexWrap:"wrap"}},
+        React.createElement("div",{style:{background:"rgba(255,255,255,0.15)",borderRadius:"12px",padding:"16px 24px",backdropFilter:"blur(10px)"}},
+          React.createElement("div",{style:{fontSize:"24px",fontWeight:"900"}},"500+"),
+          React.createElement("div",{style:{fontSize:"13px",opacity:0.9}})
+        ),
+        React.createElement("div",{style:{background:"rgba(255,255,255,0.15)",borderRadius:"12px",padding:"16px 24px",backdropFilter:"blur(10px)"}},
+          React.createElement("div",{style:{fontSize:"24px",fontWeight:"900"}},"⭐ 4.9"),
+          React.createElement("div",{style:{fontSize:"13px",opacity:0.9}})
+        ),
+        React.createElement("div",{style:{background:"rgba(255,255,255,0.15)",borderRadius:"12px",padding:"16px 24px",backdropFilter:"blur(10px)"}},
+          React.createElement("div",{style:{fontSize:"24px",fontWeight:"900"}},"100%"),
+          React.createElement("div",{style:{fontSize:"13px",opacity:0.9},"gratis para probar":true},"Gratis para probar")
+        )
+      )
     ),
-    React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:"28px"}},
-      React.createElement("div", null,
-        React.createElement("label", {style:{display:"block",color:"#a0b8a0",fontSize:"12px",letterSpacing:"2px",textTransform:"uppercase",marginBottom:"12px"}}, "Como te llamas? (opcional)"),
-        React.createElement("input", {value:form.nombre,onChange:function(e){setForm(Object.assign({},form,{nombre:e.target.value}));},placeholder:"Tu nombre...",style:{width:"100%",padding:"14px 18px",borderRadius:"12px",border:"1.5px solid #2a3a2a",background:"#0e1a0e",color:"#e8f5e8",fontSize:"15px",outline:"none"}})
+    React.createElement("div",{style:{maxWidth:"600px",margin:"-32px auto 0",padding:"0 20px 60px",position:"relative"}},
+      React.createElement("div",{className:"card fade-in",style:{padding:"32px"}},
+        React.createElement("h2",{style:{fontSize:"20px",fontWeight:"800",color:"#1f2937",marginBottom:"24px",textAlign:"center"}},"Crea tu plan gratis 👇"),
+        React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:"24px"}},
+          React.createElement("div",null,
+            React.createElement("label",{style:{display:"block",fontWeight:"700",color:"#374151",marginBottom:"8px",fontSize:"14px"}},"👤 Tu nombre (opcional)"),
+            React.createElement("input",{value:form.nombre,onChange:function(e){setForm(Object.assign({},form,{nombre:e.target.value}));},placeholder:"¿Cómo te llamamos?",style:{width:"100%",padding:"14px 18px",borderRadius:"12px",border:"2px solid #e2e8f0",fontSize:"15px",outline:"none",fontFamily:"Inter,sans-serif","&:focus":{borderColor:"#16a34a"}}})
+          ),
+          [{key:"nivel",label:"🌱 Nivel de condicion fisica",opts:niveles,emojis:emojisNivel},
+           {key:"objetivo",label:"🎯 Tu objetivo principal",opts:objetivos,emojis:emojisObj},
+           {key:"tiempo",label:"⏱️ Tiempo por sesion",opts:tiempos,emojis:emojisTiempo},
+           {key:"dias",label:"📅 Dias a la semana",opts:diasOpc,emojis:emojisDias}
+          ].map(function(campo){
+            return React.createElement("div",{key:campo.key},
+              React.createElement("label",{style:{display:"block",fontWeight:"700",color:"#374151",marginBottom:"12px",fontSize:"14px"}},campo.label),
+              React.createElement("div",{style:{display:"flex",flexWrap:"wrap",gap:"8px"}},
+                campo.opts.map(function(o){
+                  return React.createElement(Tag,{key:o,label:o,emoji:campo.emojis[o]||"",selected:form[campo.key]===o,onClick:function(){toggle(campo.key,o);}});
+                })
+              )
+            );
+          }),
+          React.createElement("button",{
+            onClick:function(){if(completo)generar();},
+            className:"btn-primary",
+            disabled:!completo
+          },completo?"🚀 Generar mi plan gratis":"Completa todas las opciones para continuar")
+        )
       ),
-      campos.map(function(campo) {
-        return React.createElement("div", {key:campo.key},
-          React.createElement("label", {style:{display:"block",color:"#a0b8a0",fontSize:"12px",letterSpacing:"2px",textTransform:"uppercase",marginBottom:"12px"}}, campo.label),
-          React.createElement("div", {style:{display:"flex",flexWrap:"wrap"}},
-            campo.opts.map(function(o) {
-              return React.createElement(Tag, {key:o,label:o,selected:form[campo.key]===o,onClick:function(){toggle(campo.key,o);}});
-            })
-          )
-        );
-      }),
-      React.createElement("button", {onClick:function(){if(completo)generar();},style:{width:"100%",padding:"18px",borderRadius:"14px",border:"none",background:completo?"linear-gradient(135deg,#16a34a,#22c55e)":"#1a2a1a",color:completo?"#fff":"#3a4f3a",fontSize:"16px",fontWeight:"600",cursor:completo?"pointer":"not-allowed"}},
-        completo ? "Generar mi plan con IA" : "Completa las opciones para continuar"
+      React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginTop:"20px"}},
+        [{emoji:"🤖",titulo:"IA Personalizada",desc:"Cada plan único para ti"},
+         {emoji:"🏠",titulo:"Sin equipo",desc:"Solo necesitas tu cuerpo"},
+         {emoji:"⚡",titulo:"Listo en segundos",desc:"Plan completo al instante"}
+        ].map(function(f){
+          return React.createElement("div",{key:f.titulo,className:"card",style:{padding:"16px",textAlign:"center"}},
+            React.createElement("div",{style:{fontSize:"28px",marginBottom:"8px"}},f.emoji),
+            React.createElement("div",{style:{fontWeight:"700",fontSize:"13px",color:"#1f2937",marginBottom:"4px"}},f.titulo),
+            React.createElement("div",{style:{fontSize:"12px",color:"#6b7280"}},f.desc)
+          );
+        })
       )
     )
   );

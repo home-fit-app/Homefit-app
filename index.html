@@ -29,6 +29,7 @@ var niveles = ["Principiante absoluto","Algo de base","Intermedio"];
 var objetivos = ["Perder peso","Ganar musculo","Mejorar resistencia","Mas energia"];
 var tiempos = ["15 min","30 min","45 min","60 min"];
 var diasOpc = ["2 dias","3 dias","4 dias","5 dias"];
+var edades = ["🌱 15-25 anos","💪 26-40 anos","🌿 41-55 anos","🧘 56-70 anos","⭐ 71+ anos"];
 var emojisObj = {"Perder peso":"🔥","Ganar musculo":"💪","Mejorar resistencia":"⚡","Mas energia":"✨"};
 var emojisNivel = {"Principiante absoluto":"🌱","Algo de base":"🌿","Intermedio":"🏋️"};
 var emojisTiempo = {"15 min":"⚡","30 min":"🎯","45 min":"💪","60 min":"🔥"};
@@ -37,53 +38,23 @@ var emojisDias = {"2 dias":"🗓️","3 dias":"📅","4 dias":"💪","5 dias":"�
 var heroImg = "https://i.ibb.co/r2CVF97Q/vitaly-gariev-6gcv-Q2-Dl-Eo0-unsplash.jpg";
 
 var ejercicios = [
-  {
-    nombre:"Sentadillas",
-    img:"https://i.ibb.co/hJ2n6BC0/pexels-mart-production-8846586.jpg",
-    desc:"Parate derecho, baja como si fueras a sentarte en una silla y vuelve a subir. Rodillas al frente, espalda recta.",
-    emoji:"🦵"
-  },
-  {
-    nombre:"Flexiones",
-    img:"https://i.ibb.co/SXLKBkQ9/pexels-kampus-8949385.jpg",
-    desc:"Apoya manos y pies en el suelo, baja el pecho hasta casi tocar el piso y sube.",
-    emoji:"💪"
-  },
-  {
-    nombre:"Plancha",
-    img:"https://i.ibb.co/V0mhVgRx/vitaly-gariev-dk36-Jr-Va-WTs-unsplash.jpg",
-    desc:"Apoya antebrazos y pies, mantén el cuerpo recto como una tabla. No bajes la cadera.",
-    emoji:"🏋️"
-  },
-  {
-    nombre:"Zancadas",
-    img:"https://i.ibb.co/XxmqSq3C/pexels-shvetsa-6593718.jpg",
-    desc:"Da un paso largo al frente, baja la rodilla trasera sin tocar el piso y vuelve.",
-    emoji:"🦶"
-  },
-  {
-    nombre:"Abdominales",
-    img:"https://i.ibb.co/7dzcRX23/pexels-silverkblack-23224739.jpg",
-    desc:"Acostado boca arriba, dobla rodillas y sube el torso hacia ellas lentamente.",
-    emoji:"🔥"
-  },
-  {
-    nombre:"Estiramiento final",
-    img:"https://i.ibb.co/FLj3qJFP/vitaly-gariev-1-XJt-Sh8-ADo4-unsplash.jpg",
-    desc:"Al terminar, estira cada musculo durante 20 segundos. Te ayuda a recuperarte mas rapido.",
-    emoji:"🧘"
-  }
+  {nombre:"Sentadillas",img:"https://i.ibb.co/hJ2n6BC0/pexels-mart-production-8846586.jpg",desc:"Parate derecho, baja como si fueras a sentarte en una silla y vuelve a subir. Rodillas al frente, espalda recta.",emoji:"🦵"},
+  {nombre:"Flexiones",img:"https://i.ibb.co/SXLKBkQ9/pexels-kampus-8949385.jpg",desc:"Apoya manos y pies en el suelo, baja el pecho hasta casi tocar el piso y sube.",emoji:"💪"},
+  {nombre:"Plancha",img:"https://i.ibb.co/V0mhVgRx/vitaly-gariev-dk36-Jr-Va-WTs-unsplash.jpg",desc:"Apoya antebrazos y pies, manten el cuerpo recto como una tabla. No bajes la cadera.",emoji:"🏋️"},
+  {nombre:"Zancadas",img:"https://i.ibb.co/XxmqSq3C/pexels-shvetsa-6593718.jpg",desc:"Da un paso largo al frente, baja la rodilla trasera sin tocar el piso y vuelve.",emoji:"🦶"},
+  {nombre:"Abdominales",img:"https://i.ibb.co/7dzcRX23/pexels-silverkblack-23224739.jpg",desc:"Acostado boca arriba, dobla rodillas y sube el torso hacia ellas lentamente.",emoji:"🔥"},
+  {nombre:"Estiramiento final",img:"https://i.ibb.co/FLj3qJFP/vitaly-gariev-1-XJt-Sh8-ADo4-unsplash.jpg",desc:"Al terminar, estira cada musculo durante 20 segundos. Te ayuda a recuperarte mas rapido.",emoji:"🧘"}
 ];
 
 function Tag(props){
-  return React.createElement("button",{onClick:props.onClick,className:"tag-btn"+(props.selected?" active":"")},props.emoji+" "+props.label);
+  return React.createElement("button",{onClick:props.onClick,className:"tag-btn"+(props.selected?" active":"")},props.label);
 }
 
 function App(){
   var s1=uu("perfil");var step=s1[0];var setStep=s1[1];
-  var s2=uu({nivel:"",objetivo:"",tiempo:"",dias:"",nombre:""});var form=s2[0];var setForm=s2[1];
+  var s2=uu({nivel:"",objetivo:"",tiempo:"",dias:"",nombre:"",edad:""});var form=s2[0];var setForm=s2[1];
   var s3=uu("");var plan=s3[0];var setPlan=s3[1];
-  var completo=form.nivel&&form.objetivo&&form.tiempo&&form.dias;
+  var completo=form.nivel&&form.objetivo&&form.tiempo&&form.dias&&form.edad;
 
   function toggle(key,val){var f=Object.assign({},form);f[key]=form[key]===val?"":val;setForm(f);}
 
@@ -92,7 +63,7 @@ function App(){
     fetch("/api/claude",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({messages:[{role:"user",content:"Eres un entrenador personal amigable y motivador. Crea un plan de entrenamiento semanal en casa para: Nivel: "+form.nivel+", Objetivo: "+form.objetivo+", Tiempo por sesion: "+form.tiempo+", Dias: "+form.dias+". REGLAS IMPORTANTES: 1) Usa SOLO estos ejercicios basicos que todo el mundo conoce: Sentadillas, Flexiones, Plancha, Abdominales, Saltos de tijera, Zancadas, Elevacion de talones, Puente de gluteos. 2) Explica cada ejercicio en UNA sola frase simple. Ejemplo: Sentadillas - baja como si fueras a sentarte en una silla y vuelve a subir. 3) Indica series y repeticiones de forma clara. Ejemplo: 3 series de 12 repeticiones, descansa 45 segundos. 4) Organiza por dias de la semana. 5) Usa emojis para motivar. 6) Al final agrega una frase motivacional corta. 7) Lenguaje simple, como si le hablaras a tu mejor amigo. Sin tablas, sin simbolos raros."}]})
+      body:JSON.stringify({messages:[{role:"user",content:"Eres un entrenador personal amigable y motivador. Crea un plan de entrenamiento semanal en casa para: Edad: "+form.edad+", Nivel: "+form.nivel+", Objetivo: "+form.objetivo+", Tiempo por sesion: "+form.tiempo+", Dias: "+form.dias+". REGLAS IMPORTANTES: 1) Adapta la intensidad y los ejercicios segun la edad — para mayores de 55 anos usa ejercicios de bajo impacto, movimientos lentos y muchos estiramientos. Para jovenes puedes ser mas intenso. 2) Usa SOLO estos ejercicios basicos: Sentadillas, Flexiones, Plancha, Abdominales, Saltos de tijera, Zancadas, Elevacion de talones, Puente de gluteos. Para mayores de 55 reemplaza saltos por caminata en el sitio. 3) Explica cada ejercicio en UNA sola frase simple. 4) Indica series y repeticiones claramente. Ejemplo: 3 series de 12 repeticiones, descansa 45 segundos. 5) Organiza por dias de la semana. 6) Usa emojis para motivar. 7) Al final una frase motivacional. 8) Lenguaje simple y amigable. Sin tablas ni simbolos raros."}]})
     })
     .then(function(r){return r.json();})
     .then(function(d){setPlan(d.content&&d.content[0]?d.content[0].text:"Error.");setStep("plan");})
@@ -113,7 +84,7 @@ function App(){
         React.createElement("div",{className:"hero-bg",style:{borderRadius:"24px",padding:"28px",marginBottom:"24px",color:"white",textAlign:"center"}},
           React.createElement("img",{src:heroImg,style:{width:"100%",maxHeight:"220px",objectFit:"cover",objectPosition:"top",borderRadius:"16px",marginBottom:"20px"}}),
           React.createElement("h2",{style:{fontSize:"24px",fontWeight:"900",marginBottom:"8px"}},form.nombre?"🏆 Plan de "+form.nombre:"🏆 Tu plan personalizado"),
-          React.createElement("p",{style:{opacity:0.9,fontSize:"14px"}},"🎯 "+form.objetivo+" • ⏱️ "+form.tiempo+" • 📅 "+form.dias)
+          React.createElement("p",{style:{opacity:0.9,fontSize:"14px"}},"🎯 "+form.objetivo+" • ⏱️ "+form.tiempo+" • 📅 "+form.dias+" • "+form.edad)
         ),
         React.createElement("h3",{style:{fontSize:"18px",fontWeight:"800",color:"#15803d",marginBottom:"16px",textAlign:"center"}},"💪 Ejercicios de tu rutina"),
         React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:"16px",marginBottom:"24px"}},
@@ -132,10 +103,9 @@ function App(){
           React.createElement("div",{style:{whiteSpace:"pre-wrap",lineHeight:"2",color:"#1f2937",fontSize:"15px"}},plan)
         ),
         React.createElement("div",{className:"card",style:{padding:"28px",marginBottom:"16px",textAlign:"center",background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"2px solid #86efac"}},
-          React.createElement("img",{src:"https://i.ibb.co/rGpTvpst/vitaly-gariev-4gq-Ag-J3-IIl-Y-unsplash.jpg",style:{width:"100%",maxHeight:"180px",objectFit:"cover",objectPosition:"top",borderRadius:"12px",marginBottom:"16px"}}),
           React.createElement("div",{style:{fontSize:"36px",marginBottom:"8px"}},"🚀"),
           React.createElement("h3",{style:{fontSize:"20px",fontWeight:"800",color:"#15803d",marginBottom:"8px"}},"Nuevos planes cada semana"),
-          React.createElement("p",{style:{color:"#6b7280",fontSize:"14px",marginBottom:"20px",lineHeight:"1.6"}},"Suscribete y recibe planes personalizados, seguimiento de progreso y motivacion diaria. Para cualquier edad y nivel."),
+          React.createElement("p",{style:{color:"#6b7280",fontSize:"14px",marginBottom:"20px",lineHeight:"1.6"}},"Suscribete y recibe planes personalizados adaptados a tu edad, seguimiento de progreso y motivacion diaria."),
           React.createElement("button",{onClick:function(){window.open("https://homefitai.lemonsqueezy.com/checkout/buy/1693890c-9744-4fa5-9970-2af687d25822","_blank");},className:"btn-primary"},"🎯 Suscribirme por $35,000/mes"),
           React.createElement("p",{style:{color:"#9ca3af",fontSize:"12px",marginTop:"12px"}},"✓ Cancela cuando quieras  ✓ Sin compromisos  ✓ Para todas las edades")
         ),
@@ -159,6 +129,14 @@ function App(){
             React.createElement("label",{style:{display:"block",fontWeight:"700",color:"#374151",marginBottom:"8px",fontSize:"14px"}},"👤 Tu nombre (opcional)"),
             React.createElement("input",{value:form.nombre,onChange:function(e){setForm(Object.assign({},form,{nombre:e.target.value}));},placeholder:"Como te llamamos?",style:{width:"100%",padding:"14px 18px",borderRadius:"12px",border:"2px solid #e2e8f0",fontSize:"15px",outline:"none",fontFamily:"Inter,sans-serif"}})
           ),
+          React.createElement("div",null,
+            React.createElement("label",{style:{display:"block",fontWeight:"700",color:"#374151",marginBottom:"12px",fontSize:"14px"}},"🎂 Tu rango de edad"),
+            React.createElement("div",{style:{display:"flex",flexWrap:"wrap",gap:"8px"}},
+              edades.map(function(e){
+                return React.createElement(Tag,{key:e,label:e,selected:form.edad===e,onClick:function(){toggle("edad",e);}});
+              })
+            )
+          ),
           [{key:"nivel",label:"🌱 Nivel de condicion fisica",opts:niveles,emojis:emojisNivel},
            {key:"objetivo",label:"🎯 Tu objetivo principal",opts:objetivos,emojis:emojisObj},
            {key:"tiempo",label:"⏱️ Tiempo por sesion",opts:tiempos,emojis:emojisTiempo},
@@ -168,7 +146,7 @@ function App(){
               React.createElement("label",{style:{display:"block",fontWeight:"700",color:"#374151",marginBottom:"12px",fontSize:"14px"}},campo.label),
               React.createElement("div",{style:{display:"flex",flexWrap:"wrap",gap:"8px"}},
                 campo.opts.map(function(o){
-                  return React.createElement(Tag,{key:o,label:o,emoji:campo.emojis[o]||"",selected:form[campo.key]===o,onClick:function(){toggle(campo.key,o);}});
+                  return React.createElement(Tag,{key:o,label:campo.emojis[o]+" "+o,selected:form[campo.key]===o,onClick:function(){toggle(campo.key,o);}});
                 })
               )
             );
@@ -177,9 +155,9 @@ function App(){
         )
       ),
       React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginTop:"20px"}},
-        [{emoji:"🤖",titulo:"IA Personalizada",desc:"Cada plan unico para ti"},
-         {emoji:"🏠",titulo:"Sin equipo",desc:"Solo necesitas tu cuerpo"},
-         {emoji:"👴👩",titulo:"Para todos",desc:"De 20 a 70 anos"}
+        [{emoji:"🤖",titulo:"IA Personalizada",desc:"Adaptado a tu edad"},
+         {emoji:"🏠",titulo:"Sin equipo",desc:"Solo tu cuerpo"},
+         {emoji:"👴👩",titulo:"Para todos",desc:"De 15 a 71+ anos"}
         ].map(function(f){
           return React.createElement("div",{key:f.titulo,className:"card",style:{padding:"16px",textAlign:"center"}},
             React.createElement("div",{style:{fontSize:"28px",marginBottom:"8px"}},f.emoji),

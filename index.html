@@ -120,6 +120,42 @@ body { background: #f0fdf4; min-height: 100vh; font-family: 'Inter', sans-serif;
 @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 .fade-in { animation: fadeIn 0.4s ease forwards; }
 
+/* Exercise card action buttons */
+.ej-btn {
+  flex: 1; padding: 8px 6px; border-radius: 9px; font-size: 12px;
+  font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer;
+  transition: all 0.18s ease; text-align: center; text-decoration: none;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+}
+.ej-btn-steps {
+  border: 1.5px solid #16a34a55; background: white; color: #16a34a;
+}
+.ej-btn-steps.open { background: #f0fdf4; }
+.ej-btn-steps:hover { background: #f0fdf4; border-color: #16a34a; }
+.ej-btn-video {
+  border: 1.5px solid #ef444455; background: white; color: #ef4444;
+}
+.ej-btn-video:hover { background: #fff5f5; border-color: #ef4444; }
+
+/* Steps list */
+.steps-list {
+  margin: 12px 0 0; padding: 12px 14px;
+  background: #f0fdf4; border-radius: 10px;
+  border: 1px solid #dcfce7;
+  list-style: none;
+}
+.steps-list li {
+  display: flex; gap: 10px; font-size: 12px; color: #374151;
+  line-height: 1.6; padding: 4px 0;
+  border-bottom: 1px solid #dcfce7;
+}
+.steps-list li:last-child { border-bottom: none; }
+.steps-list li .step-num {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  background: #16a34a; color: white; font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+
 /* Logo pulse */
 @keyframes logoPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.3); }
@@ -159,12 +195,78 @@ const LOADING_MSGS = [
 const heroImg = "https://i.ibb.co/SXLKBkQ9/pexels-kampus-8949385.jpg";
 
 const ejercicios = [
-  { nombre: "Sentadillas",       img: "https://i.ibb.co/hJ2n6BC0/pexels-mart-production-8846586.jpg",    desc: "Párate derecho, baja como si fueras a sentarte en una silla y vuelve a subir.",       emoji: "🦵" },
-  { nombre: "Flexiones",         img: "https://i.ibb.co/SXLKBkQ9/pexels-kampus-8949385.jpg",             desc: "Apoya manos y pies en el suelo, baja el pecho hasta casi tocar el piso y sube.",     emoji: "💪" },
-  { nombre: "Plancha",           img: "https://i.ibb.co/V0mhVgRx/vitaly-gariev-dk36-Jr-Va-WTs-unsplash.jpg", desc: "Apoya antebrazos y pies, mantén el cuerpo recto como una tabla.",                 emoji: "🏋️" },
-  { nombre: "Zancadas",          img: "https://i.ibb.co/XxmqSq3C/pexels-shvetsa-6593718.jpg",            desc: "Da un paso largo al frente, baja la rodilla trasera sin tocar el piso y vuelve.",  emoji: "🦶" },
-  { nombre: "Abdominales",       img: "/images/abdominales.jpg",                                         desc: "Acostado boca arriba, dobla rodillas y sube el torso hacia ellas lentamente.",       emoji: "🔥" },
-  { nombre: "Estiramiento final",img: "https://i.ibb.co/FLj3qJFP/vitaly-gariev-1-XJt-Sh8-ADo4-unsplash.jpg", desc: "Al terminar, estira cada músculo 20 segundos. Te ayuda a recuperarte más rápido.", emoji: "🧘" },
+  {
+    nombre: "Sentadillas", emoji: "🦵",
+    img: "https://i.ibb.co/hJ2n6BC0/pexels-mart-production-8846586.jpg",
+    desc: "Párate derecho, baja como si fueras a sentarte en una silla y vuelve a subir.",
+    pasos: [
+      "Párate con los pies al ancho de los hombros, puntas ligeramente hacia afuera.",
+      "Mantén el pecho arriba, la espalda recta y los brazos al frente para equilibrio.",
+      "Baja lentamente doblando rodillas y caderas hasta que los muslos queden paralelos al suelo.",
+      "Empuja con los talones para subir y vuelve a la posición inicial. ¡No dejes que las rodillas colapsen hacia adentro!",
+    ],
+    video: "https://www.youtube.com/results?search_query=como+hacer+sentadillas+correctamente+en+casa",
+  },
+  {
+    nombre: "Flexiones", emoji: "💪",
+    img: "https://i.ibb.co/SXLKBkQ9/pexels-kampus-8949385.jpg",
+    desc: "Apoya manos y pies en el suelo, baja el pecho hasta casi tocar el piso y sube.",
+    pasos: [
+      "Colócate boca abajo con las manos un poco más anchas que los hombros.",
+      "Estira los brazos y apoya solo las palmas y las puntas de los pies. Cuerpo recto.",
+      "Dobla los codos a 45° y baja el pecho hasta casi tocar el suelo.",
+      "Empuja con fuerza hacia arriba hasta extender los brazos completamente. Si es difícil, apoya las rodillas.",
+    ],
+    video: "https://www.youtube.com/results?search_query=como+hacer+flexiones+correctamente+principiantes",
+  },
+  {
+    nombre: "Plancha", emoji: "🏋️",
+    img: "https://i.ibb.co/V0mhVgRx/vitaly-gariev-dk36-Jr-Va-WTs-unsplash.jpg",
+    desc: "Apoya antebrazos y pies, mantén el cuerpo recto como una tabla.",
+    pasos: [
+      "Coloca los antebrazos en el suelo con los codos justo bajo los hombros.",
+      "Extiende las piernas hacia atrás apoyándote en las puntas de los pies.",
+      "Contrae el abdomen y los glúteos. El cuerpo debe formar una línea recta.",
+      "Mantén la posición sin bajar las caderas ni subir el trasero. Respira de forma constante.",
+    ],
+    video: "https://www.youtube.com/results?search_query=como+hacer+plancha+abdominal+correctamente",
+  },
+  {
+    nombre: "Zancadas", emoji: "🦶",
+    img: "https://i.ibb.co/XxmqSq3C/pexels-shvetsa-6593718.jpg",
+    desc: "Da un paso largo al frente, baja la rodilla trasera sin tocar el piso y vuelve.",
+    pasos: [
+      "Párate erguido con los pies juntos y manos en la cintura o al frente.",
+      "Da un paso largo hacia adelante con un pie, manteniendo el torso recto.",
+      "Baja la rodilla trasera hacia el suelo sin llegar a tocarlo. La rodilla delantera no debe pasar la punta del pie.",
+      "Empuja con el talón delantero para volver al inicio. Alterna piernas en cada repetición.",
+    ],
+    video: "https://www.youtube.com/results?search_query=como+hacer+zancadas+en+casa+correctamente",
+  },
+  {
+    nombre: "Abdominales", emoji: "🔥",
+    img: "/images/abdominales.jpg",
+    desc: "Acostado boca arriba, dobla rodillas y sube el torso hacia ellas lentamente.",
+    pasos: [
+      "Acuéstate boca arriba con las rodillas dobladas y los pies apoyados en el suelo.",
+      "Coloca las manos detrás de la cabeza o cruza los brazos en el pecho. No jales el cuello.",
+      "Contrae el abdomen y sube el torso unos 30° hacia las rodillas, exhalando.",
+      "Baja lentamente sin soltar la tensión del abdomen y repite sin tocar el suelo con la espalda.",
+    ],
+    video: "https://www.youtube.com/results?search_query=como+hacer+abdominales+correctamente+en+casa",
+  },
+  {
+    nombre: "Estiramiento final", emoji: "🧘",
+    img: "https://i.ibb.co/FLj3qJFP/vitaly-gariev-1-XJt-Sh8-ADo4-unsplash.jpg",
+    desc: "Al terminar, estira cada músculo 20 segundos. Te ayuda a recuperarte más rápido.",
+    pasos: [
+      "Cuádriceps: párate, lleva un talón hacia el glúteo y sostén 20 seg. Alterna piernas.",
+      "Isquiotibiales: siéntate, extiende una pierna y alcanza la punta del pie. 20 seg cada lado.",
+      "Hombros: lleva un brazo cruzado sobre el pecho y presiónalo con el otro. 20 seg.",
+      "Espalda baja: acuéstate, abraza las rodillas al pecho y mantén 20-30 segundos.",
+    ],
+    video: "https://www.youtube.com/results?search_query=estiramientos+post+entrenamiento+en+casa",
+  },
 ];
 
 // ─── Pill button ──────────────────────────────────────────────────────────
@@ -364,7 +466,8 @@ function parseDays(text) {
 
 // ─── Plan view ────────────────────────────────────────────────────────────
 function PlanView({ plan, perfil, onReset }) {
-  const [copied, setCopied] = useState(false);
+  const [copied,    setCopied]    = useState(false);
+  const [expandido, setExpandido] = useState(null);
   const days = parseDays(plan);
 
   const handleCopy = () => {
@@ -407,16 +510,47 @@ function PlanView({ plan, perfil, onReset }) {
         <h3 style={{ fontSize: "18px", fontWeight: "800", color: "#15803d", marginBottom: "16px", textAlign: "center" }}>
           💪 Ejercicios de tu rutina
         </h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: "14px", marginBottom: "28px" }}>
-          {ejercicios.map(ej => (
-            <div key={ej.nombre} className="card" style={{ overflow: "hidden", border: "2px solid #dcfce7" }}>
-              <img src={ej.img} style={{ width: "100%", height: "150px", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
-              <div style={{ padding: "14px" }}>
-                <h4 style={{ fontWeight: "800", color: "#15803d", fontSize: "14px", marginBottom: "6px" }}>{ej.emoji} {ej.nombre}</h4>
-                <p style={{ color: "#6b7280", fontSize: "12px", lineHeight: "1.5" }}>{ej.desc}</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: "14px", marginBottom: "28px" }}>
+          {ejercicios.map(ej => {
+            const abierto = expandido === ej.nombre;
+            return (
+              <div key={ej.nombre} className="card" style={{ overflow: "hidden", border: "2px solid #dcfce7", display: "flex", flexDirection: "column" }}>
+                <img src={ej.img} style={{ width: "100%", height: "150px", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                <div style={{ padding: "14px", flex: 1, display: "flex", flexDirection: "column" }}>
+                  <h4 style={{ fontWeight: "800", color: "#15803d", fontSize: "14px", marginBottom: "4px" }}>{ej.emoji} {ej.nombre}</h4>
+                  <p style={{ color: "#6b7280", fontSize: "12px", lineHeight: "1.5", marginBottom: "12px", flex: 1 }}>{ej.desc}</p>
+                  {/* Action buttons */}
+                  <div style={{ display: "flex", gap: "6px" }}>
+                    <button
+                      className={`ej-btn ej-btn-steps${abierto ? " open" : ""}`}
+                      onClick={() => setExpandido(abierto ? null : ej.nombre)}
+                    >
+                      {abierto ? "▲ Ocultar" : "▼ Ver pasos"}
+                    </button>
+                    <a
+                      href={ej.video}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ej-btn ej-btn-video"
+                    >
+                      ▶ Video
+                    </a>
+                  </div>
+                  {/* Steps */}
+                  {abierto && (
+                    <ol className="steps-list">
+                      {ej.pasos.map((paso, i) => (
+                        <li key={i}>
+                          <span className="step-num">{i + 1}</span>
+                          <span>{paso}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Plan text */}

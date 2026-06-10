@@ -279,6 +279,47 @@ const ejercicios = [
   },
 ];
 
+const CHECKOUT_URL = "https://homefitai.lemonsqueezy.com/checkout/buy/1693890c-9744-4fa5-9970-2af687d25822";
+const PLANES_KEY   = "hf_planes_usados";
+
+// ─── Paywall screen ───────────────────────────────────────────────────────
+function Paywall({ perfil, onVolver }) {
+  return (
+    <div className="fade-in" style={{ background: "#f0fdf4", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
+      <div style={{ maxWidth: "420px", width: "100%", textAlign: "center" }}>
+        <div className="hero-bg" style={{ borderRadius: "24px", padding: "36px 28px", color: "white", marginBottom: "20px" }}>
+          <div style={{ fontSize: "52px", marginBottom: "12px" }}>🔒</div>
+          <h2 style={{ fontSize: "26px", fontWeight: "900", marginBottom: "10px" }}>Ya usaste tu plan gratis</h2>
+          <p style={{ fontSize: "15px", opacity: 0.9, lineHeight: "1.6" }}>
+            Suscríbete para generar planes ilimitados cada semana, adaptados a tu progreso.
+          </p>
+        </div>
+
+        <div className="card" style={{ padding: "28px", marginBottom: "16px" }}>
+          <div style={{ fontSize: "32px", fontWeight: "900", color: "#15803d", marginBottom: "4px" }}>$35.000 COP</div>
+          <div style={{ color: "#6b7280", fontSize: "14px", marginBottom: "20px" }}>por mes · cancela cuando quieras</div>
+          <div style={{ textAlign: "left", marginBottom: "20px" }}>
+            {["Planes personalizados ilimitados","Adaptados a tu edad y nivel","Actualizados cada semana","Soporte directo"].map(f => (
+              <div key={f} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "7px 0", borderBottom: "1px solid #f0fdf4", fontSize: "14px", color: "#374151" }}>
+                <span style={{ color: "#16a34a", fontWeight: "800", fontSize: "16px" }}>✓</span> {f}
+              </div>
+            ))}
+          </div>
+          <button className="btn-primary" style={{ width: "100%", fontSize: "16px", padding: "16px" }}
+            onClick={() => window.open(CHECKOUT_URL, "_blank")}>
+            🚀 Suscribirme ahora
+          </button>
+          <p style={{ color: "#9ca3af", fontSize: "12px", marginTop: "12px" }}>Pago seguro · Cancela en cualquier momento</p>
+        </div>
+
+        <button onClick={onVolver} style={{ background: "none", border: "none", color: "#9ca3af", fontSize: "14px", cursor: "pointer", fontFamily: "Inter,sans-serif" }}>
+          ← Volver al inicio
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Pill button ──────────────────────────────────────────────────────────
 function Pill({ label, selected, onClick }) {
   return (
@@ -591,12 +632,13 @@ function PlanView({ plan, perfil, onReset }) {
         {/* Subscribe */}
         <div className="card" style={{ padding: "28px", marginBottom: "14px", textAlign: "center", background: "linear-gradient(135deg,#f0fdf4,#dcfce7)", border: "2px solid #86efac" }}>
           <div style={{ fontSize: "36px", marginBottom: "10px" }}>🚀</div>
-          <h3 style={{ fontSize: "20px", fontWeight: "800", color: "#15803d", marginBottom: "8px" }}>Nuevos planes cada semana</h3>
-          <p style={{ color: "#6b7280", fontSize: "14px", marginBottom: "20px", lineHeight: "1.6" }}>
-            Suscríbete y recibe planes personalizados adaptados a tu edad,<br />seguimiento de progreso y motivación diaria.
+          <h3 style={{ fontSize: "20px", fontWeight: "800", color: "#15803d", marginBottom: "8px" }}>¿Te gustó tu plan?</h3>
+          <p style={{ color: "#6b7280", fontSize: "14px", marginBottom: "6px", lineHeight: "1.6" }}>
+            Suscríbete y genera planes ilimitados cada semana, personalizados a tu progreso.
           </p>
-          <button className="btn-primary" onClick={() => window.open("https://homefitai.lemonsqueezy.com/checkout/buy/1693890c-9744-4fa5-9970-2af687d25822", "_blank")}>
-            🎯 Suscribirme por $35,000/mes
+          <div style={{ fontSize: "22px", fontWeight: "900", color: "#15803d", marginBottom: "16px" }}>$35.000 COP/mes</div>
+          <button className="btn-primary" style={{ width: "100%", fontSize: "15px" }} onClick={() => window.open(CHECKOUT_URL, "_blank")}>
+            🎯 Suscribirme ahora
           </button>
           <p style={{ color: "#9ca3af", fontSize: "12px", marginTop: "12px" }}>✓ Cancela cuando quieras &nbsp;·&nbsp; ✓ Sin compromisos &nbsp;·&nbsp; ✓ Para todas las edades</p>
         </div>
@@ -616,6 +658,12 @@ function App() {
   const [plan,   setPlan]   = useState("");
 
   const handleGenerar = (form) => {
+    const usados = parseInt(localStorage.getItem(PLANES_KEY) || "0");
+    if (usados >= 1) {
+      setPerfil(form);
+      setStep("paywall");
+      return;
+    }
     setPerfil(form);
     setStep("generando");
     const prompt = `Eres un entrenador personal amigable y motivador. Crea un plan de entrenamiento semanal en casa para: Edad: ${form.edad}, Nivel: ${form.nivel}, Objetivo: ${form.objetivo}, Tiempo por sesión: ${form.tiempo}, Días: ${form.dias}. REGLAS: 1) Adapta la intensidad según la edad — para mayores de 55 usa ejercicios de bajo impacto. 2) Usa SOLO estos ejercicios básicos: Sentadillas, Flexiones, Plancha, Abdominales, Saltos de tijera, Zancadas, Elevación de talones, Puente de glúteos. Para mayores de 55 reemplaza saltos por caminata en el sitio. 3) Organiza por días de la semana con formato: DÍA 1 - [nombre del día]: [tipo]. 4) Indica series y repeticiones claramente. 5) Usa emojis para motivar. 6) Al final una frase motivacional. 7) Lenguaje simple y amigable.`;
@@ -625,12 +673,17 @@ function App() {
       body: JSON.stringify({ messages: [{ role: "user", content: prompt }] }),
     })
       .then(r => r.json())
-      .then(d => { setPlan(d.content?.[0]?.text || "Error generando el plan."); setStep("plan"); })
+      .then(d => {
+        localStorage.setItem(PLANES_KEY, String(usados + 1));
+        setPlan(d.content?.[0]?.text || "Error generando el plan.");
+        setStep("plan");
+      })
       .catch(e => { setPlan("Error de conexión: " + e.message); setStep("plan"); });
   };
 
   if (step === "generando") return <Generando />;
   if (step === "plan")      return <PlanView plan={plan} perfil={perfil} onReset={() => setStep("perfil")} />;
+  if (step === "paywall")   return <Paywall perfil={perfil} onVolver={() => setStep("perfil")} />;
   return <PerfilForm onGenerar={handleGenerar} />;
 }
 

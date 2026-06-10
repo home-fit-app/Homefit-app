@@ -652,10 +652,17 @@ function PlanView({ plan, perfil, onReset }) {
 }
 
 // ─── App ──────────────────────────────────────────────────────────────────
+const PLAN_KEY   = "hf_plan_guardado";
+const PERFIL_KEY = "hf_perfil_guardado";
+
 function App() {
-  const [step,   setStep]   = useState("perfil");
-  const [perfil, setPerfil] = useState(null);
-  const [plan,   setPlan]   = useState("");
+  const [step,   setStep]   = useState(() => {
+    return localStorage.getItem(PLAN_KEY) ? "plan" : "perfil";
+  });
+  const [perfil, setPerfil] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(PERFIL_KEY)) || null; } catch { return null; }
+  });
+  const [plan,   setPlan]   = useState(() => localStorage.getItem(PLAN_KEY) || "");
 
   const handleGenerar = (form) => {
     const usados = parseInt(localStorage.getItem(PLANES_KEY) || "0");
@@ -674,15 +681,25 @@ function App() {
     })
       .then(r => r.json())
       .then(d => {
+        const texto = d.content?.[0]?.text || "Error generando el plan.";
         localStorage.setItem(PLANES_KEY, String(usados + 1));
-        setPlan(d.content?.[0]?.text || "Error generando el plan.");
+        localStorage.setItem(PLAN_KEY, texto);
+        localStorage.setItem(PERFIL_KEY, JSON.stringify(form));
+        setPlan(texto);
+        setPerfil(form);
         setStep("plan");
       })
       .catch(e => { setPlan("Error de conexión: " + e.message); setStep("plan"); });
   };
 
+  const handleReset = () => {
+    localStorage.removeItem(PLAN_KEY);
+    localStorage.removeItem(PERFIL_KEY);
+    setStep("perfil");
+  };
+
   if (step === "generando") return <Generando />;
-  if (step === "plan")      return <PlanView plan={plan} perfil={perfil} onReset={() => setStep("perfil")} />;
+  if (step === "plan")      return <PlanView plan={plan} perfil={perfil} onReset={handleReset} />;
   if (step === "paywall")   return <Paywall perfil={perfil} onVolver={() => setStep("perfil")} />;
   return <PerfilForm onGenerar={handleGenerar} />;
 }

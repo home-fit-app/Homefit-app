@@ -67,6 +67,9 @@ body { background: #f0fdf4; min-height: 100vh; font-family: 'Inter', sans-serif;
 .steps-list li { display: flex; gap: 10px; font-size: 12px; color: #374151; line-height: 1.6; padding: 4px 0; border-bottom: 1px solid #dcfce7; }
 .steps-list li:last-child { border-bottom: none; }
 .steps-list li .step-num { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; background: #16a34a; color: white; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.reto-btn { width: 100%; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s ease; border: 2px solid #e5e7eb; background: white; color: #6b7280; margin-top: 10px; }
+.reto-btn.cumplido { background: linear-gradient(135deg, #16a34a, #22c55e); color: white; border-color: #16a34a; box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
+.reto-counter { display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid #86efac; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
 .fourlife-banner { background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 50%, #1e3a8a 100%); border-radius: 20px; padding: 24px; margin-bottom: 20px; color: white; }
 .fourlife-product-card { background: white; border-radius: 14px; padding: 16px; border: 2px solid #dbeafe; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 8px; }
 .fourlife-product-card:hover { border-color: #1d4ed8; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(29,78,216,0.15); }
@@ -323,6 +326,15 @@ function PlanView({ plan, perfil, onReset }) {
   const [copied, setCopied] = useState(false);
   const [expandido, setExpandido] = useState(null);
   const days = parseDays(plan);
+  const totalDias = days ? days.length : 0;
+  const [retosCumplidos, setRetosCumplidos] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('hf_retos') || '[]'); } catch { return []; }
+  });
+  const toggleReto = (i) => {
+    const nuevo = retosCumplidos.includes(i) ? retosCumplidos.filter(r => r !== i) : [...retosCumplidos, i];
+    setRetosCumplidos(nuevo);
+    localStorage.setItem('hf_retos', JSON.stringify(nuevo));
+  };
   const handleCopy = () => { navigator.clipboard.writeText(plan).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2200);}); };
   const badges = [{icon:"🎯",val:perfil.objetivo},{icon:"⏱️",val:`${perfil.tiempo}/sesión`},{icon:"📅",val:`${perfil.dias}/semana`},{icon:"🎂",val:perfil.edad}];
   return (
@@ -341,6 +353,7 @@ function PlanView({ plan, perfil, onReset }) {
             ))}
           </div>
         </div>
+
         <h3 style={{fontSize:"18px",fontWeight:"800",color:"#15803d",marginBottom:"16px",textAlign:"center"}}>💪 Ejercicios de tu rutina</h3>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:"14px",marginBottom:"28px"}}>
           {ejercicios.map(ej => {
@@ -361,19 +374,49 @@ function PlanView({ plan, perfil, onReset }) {
             );
           })}
         </div>
+
+        {retosCumplidos.length > 0 && (
+          <div className="reto-counter">
+            <span style={{fontSize:"28px"}}>🏆</span>
+            <div style={{textAlign:"center"}}>
+              <div style={{fontSize:"16px",fontWeight:"800",color:"#15803d"}}>{retosCumplidos.length} de {totalDias} días completados</div>
+              <div style={{fontSize:"12px",color:"#6b7280",marginTop:"2px"}}>
+                {retosCumplidos.length === totalDias ? "¡Semana completa! Eres increíble 💪" : `¡Sigue así! Te faltan ${totalDias - retosCumplidos.length} días`}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="card" style={{padding:"28px",marginBottom:"20px"}}>
           <h3 style={{fontSize:"18px",fontWeight:"800",color:"#15803d",marginBottom:"20px"}}>📋 Tu plan semanal</h3>
-          {days?days.map((day,i)=>(
-            <div key={i} className="day-card">
-              <div className="day-head"><div className="day-num">{i+1}</div><span className="day-title">{day.header}</span></div>
-              {day.body&&<div className="day-body">{day.body}</div>}
-            </div>
-          )):<div style={{whiteSpace:"pre-wrap",lineHeight:"1.9",color:"#1f2937",fontSize:"15px"}}>{plan}</div>}
+          {days ? (
+            days.map((day, i) => (
+              <div key={i} className="day-card">
+                <div className="day-head">
+                  <div className="day-num" style={{background: retosCumplidos.includes(i) ? "#16a34a" : "#dcfce7", color: retosCumplidos.includes(i) ? "white" : "#16a34a", borderColor: retosCumplidos.includes(i) ? "#16a34a" : "#86efac"}}>
+                    {retosCumplidos.includes(i) ? "✓" : i + 1}
+                  </div>
+                  <span className="day-title">{day.header}</span>
+                </div>
+                {day.body && <div className="day-body">{day.body}</div>}
+                <div style={{padding:"0 18px 14px"}}>
+                  <button className={`reto-btn${retosCumplidos.includes(i) ? " cumplido" : ""}`} onClick={()=>toggleReto(i)}>
+                    {retosCumplidos.includes(i) ? "✅ ¡Reto Cumplido! Toca para desmarcar" : "🎯 Marcar como Reto Cumplido"}
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div style={{whiteSpace:"pre-wrap",lineHeight:"1.9",color:"#1f2937",fontSize:"15px"}}>{plan}</div>
+          )}
         </div>
+
         <FourLifeSection />
+
         <button onClick={handleCopy} style={{width:"100%",padding:"14px",borderRadius:"12px",border:"2px solid #e5e7eb",background:"white",color:"#374151",fontFamily:"Inter,sans-serif",fontSize:"14px",fontWeight:"600",cursor:"pointer",marginBottom:"14px"}}>
           {copied?"✓ Copiado al portapapeles":"📋 Copiar plan completo"}
         </button>
+
         <div className="card" style={{padding:"28px",marginBottom:"14px",textAlign:"center",background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"2px solid #86efac"}}>
           <div style={{fontSize:"36px",marginBottom:"10px"}}>🚀</div>
           <h3 style={{fontSize:"20px",fontWeight:"800",color:"#15803d",marginBottom:"8px"}}>¿Te gustó tu plan?</h3>
@@ -382,6 +425,7 @@ function PlanView({ plan, perfil, onReset }) {
           <button className="btn-primary" style={{fontSize:"15px"}} onClick={()=>window.open(CHECKOUT_URL,"_blank")}>🎯 Suscribirme ahora</button>
           <p style={{color:"#9ca3af",fontSize:"12px",marginTop:"12px"}}>✓ Cancel anytime · ✓ Para todas las edades</p>
         </div>
+
         <button onClick={onReset} style={{width:"100%",padding:"14px",background:"white",border:"2px solid #e5e7eb",borderRadius:"14px",color:"#6b7280",cursor:"pointer",fontSize:"15px",fontWeight:"600",fontFamily:"Inter,sans-serif"}}>← Crear otro plan</button>
       </div>
     </div>
@@ -411,7 +455,7 @@ function App() {
       .catch(e=>{setPlan("Error de conexión: "+e.message);setStep("plan");});
   };
 
-  const handleReset = () => { localStorage.removeItem(PLAN_KEY); localStorage.removeItem(PERFIL_KEY); setStep("perfil"); };
+  const handleReset = () => { localStorage.removeItem(PLAN_KEY); localStorage.removeItem(PERFIL_KEY); localStorage.removeItem('hf_retos'); setStep("perfil"); };
 
   if (step==="generando") return <Generando />;
   if (step==="plan") return <PlanView plan={plan} perfil={perfil} onReset={handleReset} />;

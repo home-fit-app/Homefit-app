@@ -71,7 +71,6 @@ body { background: #f0fdf4; min-height: 100vh; font-family: 'Inter', sans-serif;
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useEffect } = React;
-
 const NIVELES = [
   { val: "Principiante absoluto", icon: "🌱", sub: "Comienzo desde cero" },
   { val: "Algo de base", icon: "🏃", sub: "Ejercito de vez en cuando" },
@@ -86,6 +85,7 @@ const OBJETIVOS = [
 const TIEMPOS = ["15 min", "30 min", "45 min", "60 min"];
 const DIAS = ["2 días", "3 días", "4 días", "5 días"];
 const EDADES = ["🌱 15-25 años", "💪 26-40 años", "🌿 41-55 años", "🧘 56-70 años", "⭐ 71+ años"];
+const SEXOS = ["👩 Mujer", "👨 Hombre"];
 const LOADING_MSGS = ["Analizando tu perfil...","Diseñando ejercicios...","Calculando series y reps...","Estructurando tu semana...","Últimos retoques..."];
 const heroImg = "/images/portada.jpg";
 const FOURLIFE_URL = "https://www.4life.com/7912430";
@@ -113,7 +113,7 @@ function FourLifeSection() {
       <div className="immune-tip">
         <div style={{fontSize:"32px",marginBottom:"8px"}}>🧬</div>
         <h3 style={{fontSize:"16px",fontWeight:"800",color:"#1e40af",marginBottom:"6px"}}>El ejercicio activa tu sistema inmunológico</h3>
-        <p style={{fontSize:"13px",color:"#3730a3",lineHeight:"1.6"}}>Cuando entrenas, tu cuerpo necesita apoyo extra para recuperarse y protegerse. Los <strong>factores de transferencia de 4Life</strong> son moléculas de memoria inmunológica respaldadas por más de 25 años de ciencia. El complemento perfecto para tu rutina.</p>
+        <p style={{fontSize:"13px",color:"#3730a3",lineHeight:"1.6"}}>Cuando entrenas, tu cuerpo necesita apoyo extra para recuperarse y protegerse. Los <strong>factores de transferencia de 4Life</strong> son moléculas de memoria inmunológica respaldadas por más de 25 años de ciencia.</p>
       </div>
       <div className="fourlife-banner">
         <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"16px"}}>
@@ -134,13 +134,13 @@ function FourLifeSection() {
           ))}
         </div>
         <a href={FOURLIFE_URL} target="_blank" rel="noopener noreferrer" className="btn-fourlife">🛒 Ver todos los productos 4Life →</a>
-        <p style={{fontSize:"11px",opacity:0.7,textAlign:"center",marginTop:"8px"}}>Envíos a todo el mundo · Garantía 30 días · Descuentos de hasta 20%</p>
+        <p style={{fontSize:"11px",opacity:0.7,textAlign:"center",marginTop:"8px"}}>Envíos a todo el mundo · Garantía 30 días</p>
       </div>
     </div>
   );
 }
 
-function Paywall({ perfil, onVolver }) {
+function Paywall({ onVolver }) {
   return (
     <div className="fade-in" style={{background:"#f0fdf4",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"24px"}}>
       <div style={{maxWidth:"420px",width:"100%",textAlign:"center"}}>
@@ -150,8 +150,8 @@ function Paywall({ perfil, onVolver }) {
           <p style={{fontSize:"15px",opacity:0.9,lineHeight:"1.6"}}>Suscríbete para generar planes ilimitados cada semana, adaptados a tu progreso.</p>
         </div>
         <div className="card" style={{padding:"28px",marginBottom:"16px"}}>
-          <div style={{fontSize:"32px",fontWeight:"900",color:"#15803d",marginBottom:"4px"}}>$35.000 COP</div>
-          <div style={{color:"#6b7280",fontSize:"14px",marginBottom:"20px"}}>por mes · cancela cuando quieras</div>
+          <div style={{fontSize:"32px",fontWeight:"900",color:"#15803d",marginBottom:"4px"}}>$8.99 USD</div>
+          <div style={{color:"#6b7280",fontSize:"14px",marginBottom:"20px"}}>per month · cancel anytime</div>
           <div style={{textAlign:"left",marginBottom:"20px"}}>
             {["Planes personalizados ilimitados","Adaptados a tu edad y nivel","Actualizados cada semana","Soporte directo"].map(f => (
               <div key={f} style={{display:"flex",alignItems:"center",gap:"10px",padding:"7px 0",borderBottom:"1px solid #f0fdf4",fontSize:"14px",color:"#374151"}}>
@@ -180,20 +180,17 @@ function OptionCard({ icon, val, sub, selected, onClick }) {
   return (
     <button className={`opt-card${selected?" active":""}`} onClick={onClick}>
       <div className="oc-icon">{icon}</div>
-      <div style={{flex:1}}>
-        <div className="oc-title">{val}</div>
-        {sub && <div className="oc-sub">{sub}</div>}
-      </div>
+      <div style={{flex:1}}><div className="oc-title">{val}</div>{sub && <div className="oc-sub">{sub}</div>}</div>
       {selected && <div className="oc-check">✓</div>}
     </button>
   );
 }
 
 function PerfilForm({ onGenerar }) {
-  const [form, setForm] = useState({ nombre:"", edad:"", nivel:"", objetivo:"", tiempo:"", dias:"" });
+  const [form, setForm] = useState({ nombre:"", sexo:"", edad:"", peso:"", talla:"", nivel:"", objetivo:"", tiempo:"", dias:"" });
   const toggle = (key, val) => setForm(f => ({ ...f, [key]: f[key]===val ? "" : val }));
-  const filled = [form.edad,form.nivel,form.objetivo,form.tiempo,form.dias].filter(Boolean).length;
-  const completo = filled === 5;
+  const filled = [form.sexo,form.edad,form.peso,form.talla,form.nivel,form.objetivo,form.tiempo,form.dias].filter(Boolean).length;
+  const completo = filled === 8;
   return (
     <div style={{background:"#f0fdf4",minHeight:"100vh"}}>
       <div className="hero-bg" style={{padding:"40px 24px 80px",textAlign:"center",color:"white"}}>
@@ -209,18 +206,34 @@ function PerfilForm({ onGenerar }) {
         <div className="card fade-in" style={{padding:"32px"}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"8px"}}>
             <h2 style={{fontSize:"20px",fontWeight:"800",color:"#1f2937"}}>✨ Crea tu plan gratis</h2>
-            <span style={{fontSize:"13px",fontWeight:"700",color:filled===5?"#16a34a":"#9ca3af"}}>{filled}/5</span>
+            <span style={{fontSize:"13px",fontWeight:"700",color:filled===8?"#16a34a":"#9ca3af"}}>{filled}/8</span>
           </div>
-          <div className="prog-bar"><div className="prog-fill" style={{width:`${filled*20}%`}} /></div>
+          <div className="prog-bar"><div className="prog-fill" style={{width:`${filled*12.5}%`}} /></div>
           <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
             <div>
               <label className="sec-label">👤 Tu nombre <span style={{fontWeight:400,color:"#9ca3af"}}>(opcional)</span></label>
-              <input className="hf-input" value={form.nombre} onChange={e => setForm(f=>({...f,nombre:e.target.value}))} placeholder="¿Cómo te llamamos?" />
+              <input className="hf-input" value={form.nombre} onChange={e=>setForm(f=>({...f,nombre:e.target.value}))} placeholder="¿Cómo te llamamos?" />
+            </div>
+            <div>
+              <label className="sec-label">⚧ Sexo</label>
+              <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
+                {SEXOS.map(s => <Pill key={s} label={s} selected={form.sexo===s} onClick={()=>toggle("sexo",s)} />)}
+              </div>
             </div>
             <div>
               <label className="sec-label">🎂 Tu rango de edad</label>
               <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
                 {EDADES.map(e => <Pill key={e} label={e} selected={form.edad===e} onClick={()=>toggle("edad",e)} />)}
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+              <div>
+                <label className="sec-label">⚖️ Peso (kg)</label>
+                <input className="hf-input" type="number" min="30" max="200" value={form.peso} onChange={e=>setForm(f=>({...f,peso:e.target.value}))} placeholder="ej: 65" />
+              </div>
+              <div>
+                <label className="sec-label">📏 Talla (cm)</label>
+                <input className="hf-input" type="number" min="100" max="220" value={form.talla} onChange={e=>setForm(f=>({...f,talla:e.target.value}))} placeholder="ej: 165" />
               </div>
             </div>
             <div>
@@ -248,7 +261,7 @@ function PerfilForm({ onGenerar }) {
               </div>
             </div>
             <button className="btn-primary" disabled={!completo} onClick={()=>completo&&onGenerar(form)}>
-              {completo?"🚀 Generar mi plan gratis":`Completa ${5-filled} ${5-filled===1?"opción":"opciones"} más`}
+              {completo?"🚀 Generar mi plan gratis":`Completa ${8-filled} ${8-filled===1?"opción":"opciones"} más`}
             </button>
           </div>
         </div>
@@ -268,15 +281,12 @@ function PerfilForm({ onGenerar }) {
 
 function Generando() {
   const [msgIdx, setMsgIdx] = useState(0);
-  useEffect(() => {
-    const t = setInterval(()=>setMsgIdx(i=>(i+1)%LOADING_MSGS.length), 2200);
-    return ()=>clearInterval(t);
-  }, []);
+  useEffect(() => { const t = setInterval(()=>setMsgIdx(i=>(i+1)%LOADING_MSGS.length),2200); return ()=>clearInterval(t); }, []);
   return (
     <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"40px",background:"#f0fdf4",padding:"20px"}}>
       <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
         <div style={{width:"38px",height:"38px",borderRadius:"10px",background:"linear-gradient(135deg,#16a34a,#22c55e)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"20px"}}>🏠</div>
-        <span style={{fontSize:"20px",fontWeight:"800",color:"#15803d",letterSpacing:"-0.5px"}}>HomeFit</span>
+        <span style={{fontSize:"20px",fontWeight:"800",color:"#15803d"}}>HomeFit</span>
       </div>
       <img src={heroImg} style={{width:"180px",height:"180px",borderRadius:"50%",objectFit:"cover",boxShadow:"0 8px 32px rgba(22,163,74,0.25)"}} />
       <div style={{textAlign:"center"}}>
@@ -295,11 +305,9 @@ function parseDays(text) {
   const matches = [...text.matchAll(re)];
   if (matches.length < 2) return null;
   return matches.map((m,i) => {
-    const start = m.index;
-    const end = i+1<matches.length ? matches[i+1].index : text.length;
-    const chunk = text.slice(start,end).trim();
-    const lines = chunk.split("\n");
-    return { header: lines[0].replace(/[#*_]/g,"").trim(), body: lines.slice(1).join("\n").trim() };
+    const start=m.index, end=i+1<matches.length?matches[i+1].index:text.length;
+    const lines=text.slice(start,end).trim().split("\n");
+    return { header:lines[0].replace(/[#*_]/g,"").trim(), body:lines.slice(1).join("\n").trim() };
   });
 }
 
@@ -307,13 +315,8 @@ function PlanView({ plan, perfil, onReset }) {
   const [copied, setCopied] = useState(false);
   const [expandido, setExpandido] = useState(null);
   const days = parseDays(plan);
-  const handleCopy = () => { navigator.clipboard.writeText(plan).then(()=>{ setCopied(true); setTimeout(()=>setCopied(false),2200); }); };
-  const badges = [
-    {icon:"🎯",val:perfil.objetivo},
-    {icon:"⏱️",val:`${perfil.tiempo}/sesión`},
-    {icon:"📅",val:`${perfil.dias}/semana`},
-    {icon:"🎂",val:perfil.edad},
-  ];
+  const handleCopy = () => { navigator.clipboard.writeText(plan).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2200);}); };
+  const badges = [{icon:"🎯",val:perfil.objetivo},{icon:"⏱️",val:`${perfil.tiempo}/sesión`},{icon:"📅",val:`${perfil.dias}/semana`},{icon:"🎂",val:perfil.edad}];
   return (
     <div className="fade-in" style={{background:"#f0fdf4",minHeight:"100vh",padding:"20px"}}>
       <div style={{maxWidth:"720px",margin:"0 auto"}}>
@@ -326,72 +329,52 @@ function PlanView({ plan, perfil, onReset }) {
           <h2 style={{fontSize:"24px",fontWeight:"900",marginBottom:"12px"}}>{perfil.nombre?`🏆 Plan de ${perfil.nombre}`:"🏆 Tu plan personalizado"}</h2>
           <div style={{display:"flex",flexWrap:"wrap",gap:"8px",justifyContent:"center"}}>
             {badges.map(b=>(
-              <span key={b.val} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"100px",fontSize:"12px",fontWeight:"600",background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",color:"white"}}>
-                {b.icon} {b.val}
-              </span>
+              <span key={b.val} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"100px",fontSize:"12px",fontWeight:"600",background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",color:"white"}}>{b.icon} {b.val}</span>
             ))}
           </div>
         </div>
-
         <h3 style={{fontSize:"18px",fontWeight:"800",color:"#15803d",marginBottom:"16px",textAlign:"center"}}>💪 Ejercicios de tu rutina</h3>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:"14px",marginBottom:"28px"}}>
           {ejercicios.map(ej => {
-            const abierto = expandido===ej.nombre;
+            const abierto=expandido===ej.nombre;
             return (
               <div key={ej.nombre} className="card" style={{overflow:"hidden",border:"2px solid #dcfce7",display:"flex",flexDirection:"column"}}>
-                <div className="ej-img-wrap">
-                  <img src={ej.img} onError={e=>{e.target.style.display="none";}} />
-                </div>
+                <div className="ej-img-wrap"><img src={ej.img} onError={e=>{e.target.style.display="none";}} /></div>
                 <div style={{padding:"14px",flex:1,display:"flex",flexDirection:"column"}}>
                   <h4 style={{fontWeight:"800",color:"#15803d",fontSize:"14px",marginBottom:"4px"}}>{ej.emoji} {ej.nombre}</h4>
                   <p style={{color:"#6b7280",fontSize:"12px",lineHeight:"1.5",marginBottom:"12px",flex:1}}>{ej.desc}</p>
                   <div style={{display:"flex",gap:"6px"}}>
-                    <button className={`ej-btn ej-btn-steps${abierto?" open":""}`} onClick={()=>setExpandido(abierto?null:ej.nombre)}>
-                      {abierto?"▲ Ocultar":"▼ Ver pasos"}
-                    </button>
+                    <button className={`ej-btn ej-btn-steps${abierto?" open":""}`} onClick={()=>setExpandido(abierto?null:ej.nombre)}>{abierto?"▲ Ocultar":"▼ Ver pasos"}</button>
                     <a href={ej.video} target="_blank" rel="noopener noreferrer" className="ej-btn ej-btn-video">▶ Video</a>
                   </div>
-                  {abierto && (
-                    <ol className="steps-list">
-                      {ej.pasos.map((paso,i)=>(
-                        <li key={i}><span className="step-num">{i+1}</span><span>{paso}</span></li>
-                      ))}
-                    </ol>
-                  )}
+                  {abierto && <ol className="steps-list">{ej.pasos.map((paso,i)=><li key={i}><span className="step-num">{i+1}</span><span>{paso}</span></li>)}</ol>}
                 </div>
               </div>
             );
           })}
         </div>
-
         <div className="card" style={{padding:"28px",marginBottom:"20px"}}>
           <h3 style={{fontSize:"18px",fontWeight:"800",color:"#15803d",marginBottom:"20px"}}>📋 Tu plan semanal</h3>
-          {days ? days.map((day,i)=>(
+          {days?days.map((day,i)=>(
             <div key={i} className="day-card">
               <div className="day-head"><div className="day-num">{i+1}</div><span className="day-title">{day.header}</span></div>
-              {day.body && <div className="day-body">{day.body}</div>}
+              {day.body&&<div className="day-body">{day.body}</div>}
             </div>
-          )) : <div style={{whiteSpace:"pre-wrap",lineHeight:"1.9",color:"#1f2937",fontSize:"15px"}}>{plan}</div>}
+          )):<div style={{whiteSpace:"pre-wrap",lineHeight:"1.9",color:"#1f2937",fontSize:"15px"}}>{plan}</div>}
         </div>
-
         <FourLifeSection />
-
-        <button onClick={handleCopy} style={{width:"100%",padding:"14px",borderRadius:"12px",border:"2px solid #e5e7eb",background:"white",color:"#374151",fontFamily:"Inter,sans-serif",fontSize:"14px",fontWeight:"600",cursor:"pointer",marginBottom:"14px",transition:"all 0.2s"}}>
+        <button onClick={handleCopy} style={{width:"100%",padding:"14px",borderRadius:"12px",border:"2px solid #e5e7eb",background:"white",color:"#374151",fontFamily:"Inter,sans-serif",fontSize:"14px",fontWeight:"600",cursor:"pointer",marginBottom:"14px"}}>
           {copied?"✓ Copiado al portapapeles":"📋 Copiar plan completo"}
         </button>
-
         <div className="card" style={{padding:"28px",marginBottom:"14px",textAlign:"center",background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"2px solid #86efac"}}>
           <div style={{fontSize:"36px",marginBottom:"10px"}}>🚀</div>
           <h3 style={{fontSize:"20px",fontWeight:"800",color:"#15803d",marginBottom:"8px"}}>¿Te gustó tu plan?</h3>
-          <p style={{color:"#6b7280",fontSize:"14px",marginBottom:"6px",lineHeight:"1.6"}}>Suscríbete y genera planes ilimitados cada semana, personalizados a tu progreso.</p>
-          <div style={{fontSize:"22px",fontWeight:"900",color:"#15803d",marginBottom:"16px"}}>$35.000 COP/mes</div>
+          <p style={{color:"#6b7280",fontSize:"14px",marginBottom:"6px",lineHeight:"1.6"}}>Planes ilimitados cada semana, personalizados a tu progreso.</p>
+          <div style={{fontSize:"22px",fontWeight:"900",color:"#15803d",marginBottom:"16px"}}>$8.99 USD/month</div>
           <button className="btn-primary" style={{fontSize:"15px"}} onClick={()=>window.open(CHECKOUT_URL,"_blank")}>🎯 Suscribirme ahora</button>
-          <p style={{color:"#9ca3af",fontSize:"12px",marginTop:"12px"}}>✓ Cancela cuando quieras · ✓ Sin compromisos · ✓ Para todas las edades</p>
+          <p style={{color:"#9ca3af",fontSize:"12px",marginTop:"12px"}}>✓ Cancel anytime · ✓ Para todas las edades</p>
         </div>
-
-        <button onClick={onReset} style={{width:"100%",padding:"14px",background:"white",border:"2px solid #e5e7eb",borderRadius:"14px",color:"#6b7280",cursor:"pointer",fontSize:"15px",fontWeight:"600",fontFamily:"Inter,sans-serif",transition:"all 0.2s"}}>
-          ← Crear otro plan
-        </button>
+        <button onClick={onReset} style={{width:"100%",padding:"14px",background:"white",border:"2px solid #e5e7eb",borderRadius:"14px",color:"#6b7280",cursor:"pointer",fontSize:"15px",fontWeight:"600",fontFamily:"Inter,sans-serif"}}>← Crear otro plan</button>
       </div>
     </div>
   );
@@ -399,22 +382,23 @@ function PlanView({ plan, perfil, onReset }) {
 
 function App() {
   const [step, setStep] = useState(()=>localStorage.getItem(PLAN_KEY)?"plan":"perfil");
-  const [perfil, setPerfil] = useState(()=>{ try{return JSON.parse(localStorage.getItem(PERFIL_KEY))||null;}catch{return null;} });
+  const [perfil, setPerfil] = useState(()=>{try{return JSON.parse(localStorage.getItem(PERFIL_KEY))||null;}catch{return null;}});
   const [plan, setPlan] = useState(()=>localStorage.getItem(PLAN_KEY)||"");
 
   const handleGenerar = (form) => {
     const usados = parseInt(localStorage.getItem(PLANES_KEY)||"0");
     if (usados>=1) { setPerfil(form); setStep("paywall"); return; }
     setPerfil(form); setStep("generando");
-    const prompt = `Eres un entrenador personal amigable y motivador. Crea un plan de entrenamiento semanal en casa para: Edad: ${form.edad}, Nivel: ${form.nivel}, Objetivo: ${form.objetivo}, Tiempo por sesión: ${form.tiempo}, Días: ${form.dias}. REGLAS: 1) Adapta la intensidad según la edad — para mayores de 55 usa ejercicios de bajo impacto. 2) Usa SOLO estos ejercicios: Sentadillas, Flexiones, Plancha, Abdominales, Saltos de tijera, Zancadas, Elevación de talones, Puente de glúteos. Para mayores de 55 reemplaza saltos por caminata en el sitio. 3) Organiza por días: DÍA 1 - [nombre del día]: [tipo]. 4) Indica series y repeticiones. 5) Usa emojis. 6) Al final una frase motivacional. 7) Lenguaje simple.`;
+    const imc = form.peso&&form.talla?(parseFloat(form.peso)/Math.pow(parseFloat(form.talla)/100,2)).toFixed(1):"";
+    const prompt = `Eres un entrenador personal amigable y motivador. Crea un plan de entrenamiento semanal en casa para: Sexo: ${form.sexo}, Edad: ${form.edad}, Peso: ${form.peso}kg, Talla: ${form.talla}cm${imc?", IMC: "+imc:""}, Nivel: ${form.nivel}, Objetivo: ${form.objetivo}, Tiempo por sesión: ${form.tiempo}, Días: ${form.dias}. REGLAS: 1) Adapta según sexo — mujeres: más glúteos y core; hombres: más pecho y espalda. 2) Mayores de 55: bajo impacto. 3) Considera el IMC. 4) Usa SOLO: Sentadillas, Flexiones, Plancha, Abdominales, Saltos de tijera, Zancadas, Elevación de talones, Puente de glúteos. Para mayores de 55 reemplaza saltos por caminata. 5) Organiza: DÍA 1 - [día]: [tipo]. 6) Series y repeticiones. 7) Emojis. 8) Frase motivacional al final. 9) Lenguaje simple.`;
     fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:[{role:"user",content:prompt}]})})
       .then(r=>r.json())
       .then(d=>{
-        const texto = d.content?.[0]?.text||"Error generando el plan.";
+        const texto=d.content?.[0]?.text||"Error generando el plan.";
         localStorage.setItem(PLANES_KEY,String(usados+1));
         localStorage.setItem(PLAN_KEY,texto);
         localStorage.setItem(PERFIL_KEY,JSON.stringify(form));
-        setPlan(texto); setPerfil(form); setStep("plan");
+        setPlan(texto);setPerfil(form);setStep("plan");
       })
       .catch(e=>{setPlan("Error de conexión: "+e.message);setStep("plan");});
   };
@@ -423,7 +407,7 @@ function App() {
 
   if (step==="generando") return <Generando />;
   if (step==="plan") return <PlanView plan={plan} perfil={perfil} onReset={handleReset} />;
-  if (step==="paywall") return <Paywall perfil={perfil} onVolver={()=>setStep("perfil")} />;
+  if (step==="paywall") return <Paywall onVolver={()=>setStep("perfil")} />;
   return <PerfilForm onGenerar={handleGenerar} />;
 }
 

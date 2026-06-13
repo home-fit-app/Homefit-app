@@ -120,6 +120,7 @@
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
 const CHECKOUT_URL = "https://nutricoach.lemonsqueezy.com/checkout/buy/PLACEHOLDER";
+const FOURLIFE_URL = "https://www.4life.com/7912430";
 const TRIAL_DAYS   = 7;
 const SK = {
   perfil:  "nc_perfil",
@@ -361,6 +362,16 @@ function Dashboard({ perfil, onMeal, trialInfo, agua, setAgua }) {
           {[{ic:"🔥",v:fmt(metas.calorias),l:"kcal/día"},{ic:"🥩",v:fmt(metas.proteinas)+"g",l:"proteínas"},{ic:"🌾",v:fmt(metas.carbohidratos)+"g",l:"carbohidratos"},{ic:"🥑",v:fmt(metas.grasas)+"g",l:"grasas"}].map((s,i) => (<div key={i} className="nut-cell"><div style={{fontSize:"1.5rem"}}>{s.ic}</div><div className="nut-val">{s.v}</div><div className="nut-lbl">{s.l}</div></div>))}
         </div>
       </div>
+      <a href={FOURLIFE_URL} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"block",margin:"0 16px 12px"}}>
+        <div style={{background:"linear-gradient(135deg,#0D9E67,#0a7d52)",borderRadius:"16px",padding:"18px 20px",display:"flex",alignItems:"center",gap:"14px",boxShadow:"0 4px 20px rgba(13,158,103,0.35)"}}>
+          <div style={{fontSize:"2.2rem"}}>💊</div>
+          <div style={{flex:1}}>
+            <div style={{color:"#fff",fontWeight:700,fontSize:"0.95rem"}}>Suplementos 4Life</div>
+            <div style={{color:"rgba(255,255,255,0.88)",fontSize:"0.82rem",marginTop:"3px"}}>Potencia tu nutrición con productos certificados</div>
+          </div>
+          <div style={{color:"rgba(255,255,255,0.9)",fontSize:"1.3rem",fontWeight:700}}>→</div>
+        </div>
+      </a>
     </div>
   );
 }
@@ -498,6 +509,16 @@ function PlanSemanal({ perfil, habitos }) {
           {open === i && (<div style={{ borderTop: "1px solid var(--border)", padding: "0 20px 16px" }}>{d.meals.map((m,j) => (<div key={j} className="meal-row" style={{ paddingLeft: 0 }}><div className="meal-ic">{m.ic}</div><div className="meal-info"><div className="meal-nm" style={{ fontSize: "0.88rem" }}>{m.n}</div><div className="meal-cal">{m.cal} kcal</div></div></div>))}</div>)}
         </div>
       ))}
+      <a href={FOURLIFE_URL} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"block",margin:"0 16px 12px"}}>
+        <div style={{background:"linear-gradient(135deg,#0D9E67,#0a7d52)",borderRadius:"16px",padding:"18px 20px",display:"flex",alignItems:"center",gap:"14px",boxShadow:"0 4px 20px rgba(13,158,103,0.35)"}}>
+          <div style={{fontSize:"2.2rem"}}>💊</div>
+          <div style={{flex:1}}>
+            <div style={{color:"#fff",fontWeight:700,fontSize:"0.95rem"}}>Suplementos 4Life</div>
+            <div style={{color:"rgba(255,255,255,0.88)",fontSize:"0.82rem",marginTop:"3px"}}>Complementa tu plan con productos certificados</div>
+          </div>
+          <div style={{color:"rgba(255,255,255,0.9)",fontSize:"1.3rem",fontWeight:700}}>→</div>
+        </div>
+      </a>
     </div>
   );
 }

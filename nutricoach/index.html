@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>NutriCoach AI 🥗</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:18px}
+    body{font-family:'Inter',sans-serif;background:#F0FBF5;min-height:100vh;color:#2D3436}
+    :root{
+      --green:#1AB87C;--green-dk:#0D9E67;--green-lt:#E8FFF4;
+      --yellow:#FDCB6E;--red:#FF7675;--blue:#74B9FF;
+      --text:#2D3436;--muted:#636E72;--border:#DFE6E9;
+      --white:#fff;--shadow:0 4px 20px rgba(0,0,0,0.08)
+    }
+    .app{max-width:430px;margin:0 auto;min-height:100vh;background:#F0FBF5;position:relative}
+    .content{padding-bottom:84px}
+    .hdr{background:linear-gradient(135deg,#1AB87C,#0D9E67);color:#fff;padding:18px 20px 22px;position:sticky;top:0;z-index:100}
+    .hdr-row{display:flex;align-items:center;justify-content:space-between}
+    .hdr-logo{font-size:1.3rem;font-weight:800}
+    .hdr-trial{background:rgba(255,255,255,0.22);padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600}
+    .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid var(--border);display:flex;z-index:100}
+    .bni{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px;cursor:pointer;border:none;background:transparent;color:var(--muted);gap:2px;font-size:0.68rem;font-family:'Inter',sans-serif}
+    .bni.on{color:var(--green)}
+    .bni-ic{font-size:1.5rem}
+    .card{background:#fff;border-radius:16px;padding:20px;margin:12px 16px;box-shadow:var(--shadow)}
+    .card-title{font-size:1.05rem;font-weight:700;margin-bottom:14px;color:var(--text)}
+    .btn{width:100%;padding:16px;border-radius:12px;border:none;font-size:1rem;font-weight:600;cursor:pointer;transition:transform 0.1s,opacity 0.1s;font-family:'Inter',sans-serif}
+    .btn:active{transform:scale(0.98)}
+    .btn-p{background:linear-gradient(135deg,#1AB87C,#0D9E67);color:#fff}
+    .btn-s{background:var(--green-lt);color:var(--green-dk)}
+    .btn-o{background:transparent;border:2px solid var(--green);color:var(--green)}
+    .btn-sm{width:auto;padding:10px 20px;font-size:0.9rem}
+    .fg{margin-bottom:16px}
+    .fl{display:block;font-size:0.88rem;font-weight:600;margin-bottom:6px}
+    .fi,.fs,.fta{width:100%;padding:14px;border:2px solid var(--border);border-radius:10px;font-size:1rem;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;background:#fff}
+    .fi:focus,.fs:focus,.fta:focus{border-color:var(--green)}
+    .fta{resize:none;height:80px}
+    .radio-group{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .radio-opt{padding:12px;border:2px solid var(--border);border-radius:10px;cursor:pointer;text-align:center;font-size:0.9rem;font-weight:500;transition:all 0.2s}
+    .radio-opt.sel{border-color:var(--green);background:var(--green-lt);color:var(--green-dk);font-weight:700}
+    .ring-wrap{display:flex;justify-content:center;align-items:center;position:relative;padding:16px 0}
+    .ring-inner{position:absolute;text-align:center}
+    .ring-cal{font-size:1.7rem;font-weight:800;line-height:1}
+    .ring-lbl{font-size:0.75rem;color:var(--muted);margin-top:2px}
+    .mb{margin-bottom:10px}
+    .mb-hd{display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px}
+    .mb-hd span:first-child{font-weight:600}
+    .mb-hd span:last-child{color:var(--muted)}
+    .mb-track{height:10px;background:var(--border);border-radius:10px;overflow:hidden}
+    .mb-fill{height:100%;border-radius:10px;transition:width 0.6s ease}
+    .meal-row{display:flex;align-items:center;padding:14px 0;border-bottom:1px solid var(--border)}
+    .meal-row:last-child{border-bottom:none}
+    .meal-ic{font-size:2rem;margin-right:12px;min-width:40px;text-align:center}
+    .meal-info{flex:1}
+    .meal-nm{font-weight:600;font-size:0.95rem}
+    .meal-cal{font-size:0.82rem;color:var(--muted);margin-top:2px}
+    .meal-btn{width:36px;height:36px;border-radius:50%;background:var(--green-lt);border:none;font-size:1.4rem;color:var(--green-dk);cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .glasses{display:flex;gap:8px;flex-wrap:wrap}
+    .glass{width:38px;height:38px;border-radius:8px;border:2px solid var(--green);cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s;background:transparent}
+    .glass.ok{background:var(--green)}
+    .sem{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;font-weight:600;font-size:0.95rem}
+    .sem.v{background:#D4EDDA;color:#155724}
+    .sem.a{background:#FFF3CD;color:#856404}
+    .sem.r{background:#F8D7DA;color:#721C24}
+    .upload-area{border:2px dashed var(--green);border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:background 0.2s}
+    .upload-area:hover{background:var(--green-lt)}
+    .upload-area input{display:none}
+    .preview-img{width:100%;max-height:240px;object-fit:cover;border-radius:12px}
+    .wlc-hero{background:linear-gradient(160deg,#1AB87C,#0D9E67);padding:48px 24px 56px;text-align:center;color:#fff}
+    .wlc-emoji{font-size:4.5rem;margin-bottom:12px}
+    .wlc-title{font-size:2.1rem;font-weight:800;margin-bottom:8px}
+    .wlc-sub{font-size:1rem;opacity:0.9;line-height:1.5}
+    .feat-item{display:flex;align-items:center;gap:14px;padding:14px;background:#fff;border-radius:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+    .feat-ic{font-size:2rem}
+    .feat-txt-title{font-weight:600;font-size:0.95rem}
+    .feat-txt-desc{font-size:0.82rem;color:var(--muted);margin-top:2px}
+    .trial-badge{background:var(--yellow);color:#7D5A00;padding:10px 24px;border-radius:100px;font-weight:700;font-size:0.9rem;display:inline-block;margin-bottom:20px}
+    .loading{text-align:center;padding:40px 20px}
+    .spinner{width:48px;height:48px;border:4px solid var(--green-lt);border-top:4px solid var(--green);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .pw-hero{background:linear-gradient(160deg,#1AB87C,#0D9E67);padding:40px 24px;text-align:center;color:#fff}
+    .pw-price{font-size:2.8rem;font-weight:800}
+    .pw-feat{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+    .pw-feat:last-child{border-bottom:none}
+    .peso-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+    .peso-item:last-child{border-bottom:none}
+    .bmi-bar{height:12px;border-radius:6px;background:linear-gradient(to right,#74b9ff,#55efc4,#fdcb6e,#e17055,#d63031);position:relative;margin:10px 0 20px}
+    .bmi-dot{width:16px;height:16px;background:#2D3436;border:3px solid #fff;border-radius:50%;position:absolute;top:-2px;transform:translateX(-50%);box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+    .dots{display:flex;justify-content:center;gap:8px;padding:16px 0 0}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all 0.3s}
+    .dot.on{background:var(--green);width:24px;border-radius:4px}
+    .nut-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+    .nut-cell{background:var(--green-lt);border-radius:10px;padding:12px;text-align:center}
+    .nut-val{font-size:1.3rem;font-weight:800;color:var(--green-dk)}
+    .nut-lbl{font-size:0.75rem;color:var(--muted);margin-top:2px}
+    .food-tag{display:inline-block;background:#F1F3F5;border-radius:100px;padding:4px 12px;font-size:0.82rem;margin:3px;color:var(--text)}
+    .mot-card{background:linear-gradient(135deg,#1AB87C,#0D9E67);color:#fff;border-radius:16px;padding:20px;margin:12px 16px;text-align:center}
+    .mot-card p{font-size:1rem;font-weight:600;line-height:1.5}
+    .back-btn{background:transparent;border:none;color:#fff;font-size:1.5rem;cursor:pointer;padding:0;margin-right:8px}
+    .fade{animation:fadeIn 0.3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .tip{font-size:0.82rem;color:var(--muted);margin-top:6px}
+    .bold{font-weight:700}
+    .green{color:var(--green-dk)}
+    .mt8{margin-top:8px}
+    .mt16{margin-top:16px}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:200}
+    .sheet{background:#fff;border-radius:24px 24px 0 0;padding:28px 24px;width:100%;max-width:430px;margin:0 auto;animation:slideUp 0.3s ease}
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+const CHECKOUT_URL = "https://nutricoach.lemonsqueezy.com/checkout/buy/PLACEHOLDER";
+const TRIAL_DAYS   = 7;
+const SK = {
+  perfil:  "nc_perfil",
+  habitos: "nc_habitos",
+  log:     "nc_foodlog",
+  pesos:   "nc_pesos",
+  agua:    "nc_agua",
+  fecha:   "nc_signup",
+  premium: "nc_premium",
+};
+const MOTIVATIONS = [
+  "Cada comida saludable es un paso hacia tu mejor versión. 💪",
+  "No se trata de ser perfecto, se trata de ser constante. 🌱",
+  "Tu cuerpo merece lo mejor. Aliméntalo con amor. 💚",
+  "Pequeños cambios hoy, grandes resultados mañana. ✨",
+  "La salud es la mayor riqueza que puedes tener. 🌟",
+  "Cada vaso de agua es un acto de amor hacia ti mismo. 💧",
+];
+const save  = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const load  = (k)    => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
+const today = ()     => new Date().toISOString().slice(0, 10);
+const fmt   = (n)    => (n || 0).toFixed(0);
+function calcBMR(p) {
+  const base = 10 * p.peso + 6.25 * p.estatura - 5 * p.edad;
+  return p.genero === "hombre" ? Math.round(base + 5) : Math.round(base - 161);
+}
+const ACT = { sedentario: 1.2, ligero: 1.375, moderado: 1.55, activo: 1.725, muy_activo: 1.9 };
+function calcMetas(p) {
+  const bmr  = calcBMR(p);
+  const tdee = Math.round(bmr * (ACT[p.actividad] || 1.375));
+  let cal    = tdee;
+  if (p.objetivo === "bajar") cal = Math.max(1200, tdee - 500);
+  if (p.objetivo === "ganar") cal = tdee + 300;
+  return {
+    calorias:      cal,
+    proteinas:     Math.round((cal * 0.30) / 4),
+    carbohidratos: Math.round((cal * 0.40) / 4),
+    grasas:        Math.round((cal * 0.30) / 9),
+    agua:          Math.round(p.peso * 0.033),
+  };
+}
+function calcBMI(p) { const h = p.estatura / 100; return +(p.peso / (h * h)).toFixed(1); }
+function bmiLabel(bmi) {
+  if (bmi < 18.5) return { label: "Bajo peso", color: "#74b9ff" };
+  if (bmi < 25)   return { label: "Normal", color: "#00b894" };
+  if (bmi < 30)   return { label: "Sobrepeso", color: "#fdcb6e" };
+  return { label: "Obesidad", color: "#e17055" };
+}
+function bmiPos(bmi) { return ((Math.min(Math.max(bmi, 14), 40) - 14) / 26) * 100; }
+function trialStatus() {
+  if (load(SK.premium)) return "premium";
+  const d = load(SK.fecha);
+  if (!d) return "new";
+  const days = Math.floor((Date.now() - d) / 86400000);
+  return days < TRIAL_DAYS ? `trial:${TRIAL_DAYS - days}` : "expired";
+}
+function todayLog() {
+  const all = load(SK.log) || {};
+  return all[today()] || { desayuno: null, almuerzo: null, cena: null, snack: null };
+}
+function saveMeal(mealType, data) {
+  const all = load(SK.log) || {};
+  if (!all[today()]) all[today()] = { desayuno: null, almuerzo: null, cena: null, snack: null };
+  all[today()][mealType] = data;
+  save(SK.log, all);
+}
+function todayTotals() {
+  const log = todayLog();
+  const meals = Object.values(log).filter(Boolean);
+  return meals.reduce(
+    (acc, m) => ({
+      calorias:      acc.calorias      + (m.calorias_total || 0),
+      proteinas:     acc.proteinas     + (m.proteinas_g    || 0),
+      carbohidratos: acc.carbohidratos + (m.carbohidratos_g|| 0),
+      grasas:        acc.grasas        + (m.grasas_g       || 0),
+    }),
+    { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 }
+  );
+}
+function CalRing({ consumed, target }) {
+  const r = 70, circ = 2 * Math.PI * r;
+  const pct = Math.min(consumed / (target || 1), 1);
+  const color = pct > 1 ? "#FF7675" : pct > 0.85 ? "#FDCB6E" : "#1AB87C";
+  return (
+    <div className="ring-wrap">
+      <svg width="160" height="160" style={{display:"block"}}>
+        <circle cx="80" cy="80" r={r} fill="none" stroke="#DFE6E9" strokeWidth="12" />
+        <circle cx="80" cy="80" r={r} fill="none" stroke={color} strokeWidth="12"
+          strokeDasharray={circ} strokeDashoffset={circ * (1 - pct)} strokeLinecap="round"
+          style={{ transform: "rotate(-90deg)", transformOrigin: "80px 80px", transition: "stroke-dashoffset 0.6s ease" }} />
+      </svg>
+      <div className="ring-inner" style={{position:"absolute",top:"50%",transform:"translateY(-50%)"}}>
+        <div className="ring-cal">{fmt(consumed)}</div>
+        <div className="ring-lbl">de {fmt(target)} kcal</div>
+      </div>
+    </div>
+  );
+}
+function MacroBar({ label, consumed, target, color }) {
+  const pct = Math.min((consumed / (target || 1)) * 100, 100);
+  return (
+    <div className="mb">
+      <div className="mb-hd"><span>{label}</span><span>{fmt(consumed)} / {fmt(target)} g</span></div>
+      <div className="mb-track"><div className="mb-fill" style={{ width: pct + "%", background: color }} /></div>
+    </div>
+  );
+}
+function Welcome({ onStart }) {
+  return (
+    <div className="fade">
+      <div className="wlc-hero">
+        <div className="wlc-emoji">🥗</div>
+        <div className="wlc-title">NutriCoach AI</div>
+        <div className="wlc-sub">Tu coach de nutrición personalizado con inteligencia artificial</div>
+      </div>
+      <div style={{ padding: "24px 16px 0" }}>
+        <div style={{ textAlign: "center", marginBottom: "20px" }}>
+          <div className="trial-badge">✨ 7 días gratis, luego $8.99/mes</div>
+        </div>
+        {[
+          { ic: "📸", t: "Analiza tus comidas con IA", d: "Sube una foto de tu plato y obtén el desglose nutricional completo" },
+          { ic: "🎯", t: "Metas personalizadas", d: "Calculamos tus calorías y macros exactos según tu cuerpo y objetivo" },
+          { ic: "📊", t: "Seguimiento de progreso", d: "Registra tu peso y ve cómo avanzas semana a semana" },
+          { ic: "💧", t: "Hidratación y hábitos", d: "Recuerda tomar agua y mantén tus hábitos saludables" },
+          { ic: "🍽️", t: "Plan semanal personalizado", d: "Recibe sugerencias de comidas basadas en lo que ya comes" },
+        ].map((f, i) => (
+          <div key={i} className="feat-item">
+            <div className="feat-ic">{f.ic}</div>
+            <div><div className="feat-txt-title">{f.t}</div><div className="feat-txt-desc">{f.d}</div></div>
+          </div>
+        ))}
+        <div style={{ padding: "20px 0" }}>
+          <button className="btn btn-p" onClick={onStart}>Comenzar gratis 🚀</button>
+          <p style={{ textAlign: "center", fontSize: "0.78rem", color: "var(--muted)", marginTop: "10px" }}>Sin tarjeta de crédito para la prueba gratuita</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+function FormPerfil({ onNext, initial }) {
+  const [f, setF] = useState(initial || { nombre: "", edad: "", genero: "mujer", peso: "", estatura: "", actividad: "moderado", objetivo: "bajar" });
+  const set = (k, v) => setF(p => ({ ...p, [k]: v }));
+  const ok  = f.nombre && f.edad && f.peso && f.estatura;
+  return (
+    <div className="fade">
+      <div className="hdr">
+        <div className="hdr-logo">🥗 NutriCoach AI</div>
+        <div style={{ fontSize: "0.85rem", opacity: 0.85, marginTop: 2 }}>Paso 1 de 2 · Tu perfil</div>
+      </div>
+      <div style={{ padding: "0 16px 24px" }}>
+        <div className="dots" style={{ marginBottom: 8 }}><div className="dot on" /><div className="dot" /></div>
+        <div className="card">
+          <div className="card-title">Cuéntanos sobre ti</div>
+          <div className="fg"><label className="fl">Tu nombre</label><input className="fi" placeholder="Ej: María" value={f.nombre} onChange={e => set("nombre", e.target.value)} /></div>
+          <div className="fg"><label className="fl">Edad</label><input className="fi" type="number" placeholder="Años" min="18" max="100" value={f.edad} onChange={e => set("edad", e.target.value)} /></div>
+          <div className="fg"><label className="fl">Género</label><div className="radio-group">{[["mujer","👩 Mujer"],["hombre","👨 Hombre"]].map(([v,l]) => (<div key={v} className={`radio-opt${f.genero===v?" sel":""}`} onClick={() => set("genero", v)}>{l}</div>))}</div></div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <div className="fg"><label className="fl">Peso actual (kg)</label><input className="fi" type="number" placeholder="70" value={f.peso} onChange={e => set("peso", e.target.value)} /></div>
+            <div className="fg"><label className="fl">Estatura (cm)</label><input className="fi" type="number" placeholder="165" value={f.estatura} onChange={e => set("estatura", e.target.value)} /></div>
+          </div>
+          <div className="fg"><label className="fl">Nivel de actividad</label><select className="fs" value={f.actividad} onChange={e => set("actividad", e.target.value)}><option value="sedentario">🛋️ Sedentario</option><option value="ligero">🚶 Ligero (1–3 días)</option><option value="moderado">🏃 Moderado (3–5 días)</option><option value="activo">🏋️ Activo (6–7 días)</option><option value="muy_activo">⚡ Muy activo</option></select></div>
+          <div className="fg"><label className="fl">Tu objetivo principal</label><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>{[["bajar","⬇️ Bajar peso"],["mantener","⚖️ Mantener"],["ganar","💪 Ganar músculo"]].map(([v,l]) => (<div key={v} className={`radio-opt${f.objetivo===v?" sel":""}`} onClick={() => set("objetivo", v)} style={{ fontSize: "0.82rem" }}>{l}</div>))}</div></div>
+        </div>
+        <button className="btn btn-p" disabled={!ok} onClick={() => onNext(f)} style={{ opacity: ok ? 1 : 0.5 }}>Siguiente →</button>
+      </div>
+    </div>
+  );
+}
+function FormHabitos({ onNext, onBack, perfilNombre }) {
+  const saved = load(SK.habitos) || {};
+  const [f, setF] = useState({ desayuno: "", almuerzo: "", cena: "", restricciones: [], agua_habitual: "4", ...saved });
+  const set  = (k, v) => setF(p => ({ ...p, [k]: v }));
+  const togR = (r) => setF(p => ({ ...p, restricciones: p.restricciones.includes(r) ? p.restricciones.filter(x => x !== r) : [...p.restricciones, r] }));
+  const RESTS = ["Vegetariano","Vegano","Sin gluten","Sin lactosa","Sin mariscos","Sin cerdo"];
+  return (
+    <div className="fade">
+      <div className="hdr"><div className="hdr-logo">🥗 NutriCoach AI</div><div style={{ fontSize: "0.85rem", opacity: 0.85, marginTop: 2 }}>Paso 2 de 2 · Tus hábitos</div></div>
+      <div style={{ padding: "0 16px 24px" }}>
+        <div className="dots" style={{ marginBottom: 8 }}><div className="dot" /><div className="dot on" /></div>
+        <div className="card">
+          <div className="card-title">¿Qué sueles comer normalmente?</div>
+          <p style={{ fontSize: "0.85rem", color: "var(--muted)", marginBottom: "16px" }}>Esto nos ayuda a sugerirte comidas adaptadas a lo que ya comes, {perfilNombre}.</p>
+          <div className="fg"><label className="fl">☀️ Desayuno habitual</label><textarea className="fta" placeholder="Ej: Café con leche, pan, una fruta" value={f.desayuno} onChange={e => set("desayuno", e.target.value)} /></div>
+          <div className="fg"><label className="fl">🍽️ Almuerzo habitual</label><textarea className="fta" placeholder="Ej: Arroz, pollo, ensalada" value={f.almuerzo} onChange={e => set("almuerzo", e.target.value)} /></div>
+          <div className="fg"><label className="fl">🌙 Cena habitual</label><textarea className="fta" placeholder="Ej: Sopa, pan, queso" value={f.cena} onChange={e => set("cena", e.target.value)} /></div>
+          <div className="fg"><label className="fl">⚠️ Restricciones alimentarias</label><div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>{RESTS.map(r => (<div key={r} onClick={() => togR(r)} style={{ padding: "8px 14px", borderRadius: "100px", cursor: "pointer", border: `2px solid ${f.restricciones.includes(r) ? "var(--green)" : "var(--border)"}`, background: f.restricciones.includes(r) ? "var(--green-lt)" : "transparent", fontSize: "0.85rem", fontWeight: f.restricciones.includes(r) ? "700" : "500", color: f.restricciones.includes(r) ? "var(--green-dk)" : "var(--text)" }}>{r}</div>))}</div></div>
+          <div className="fg"><label className="fl">💧 Vasos de agua al día</label><select className="fs" value={f.agua_habitual} onChange={e => set("agua_habitual", e.target.value)}>{["1","2","3","4","5","6","7","8+"].map(v => <option key={v} value={v}>{v} vasos</option>)}</select></div>
+        </div>
+        <div style={{ display: "flex", gap: "10px" }}><button className="btn btn-o" onClick={onBack} style={{ width: "40%" }}>← Atrás</button><button className="btn btn-p" onClick={() => onNext(f)} style={{ width: "60%" }}>¡Empezar! 🚀</button></div>
+      </div>
+    </div>
+  );
+}
+function Dashboard({ perfil, onMeal, trialInfo, agua, setAgua }) {
+  const metas = calcMetas(perfil), totals = todayTotals(), log = todayLog();
+  const mot = MOTIVATIONS[new Date().getDay() % MOTIVATIONS.length];
+  const vasosMeta = Math.round(metas.agua / 0.25);
+  const MEALS = [{key:"desayuno",ic:"☀️",label:"Desayuno"},{key:"almuerzo",ic:"🍽️",label:"Almuerzo"},{key:"cena",ic:"🌙",label:"Cena"},{key:"snack",ic:"🍎",label:"Snack"}];
+  return (
+    <div className="content fade">
+      <div className="hdr">
+        <div className="hdr-row">
+          <div><div className="hdr-logo">Hola, {perfil.nombre} 👋</div><div style={{ fontSize: "0.82rem", opacity: 0.85, marginTop: 2 }}>{new Date().toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long" })}</div></div>
+          <div className="hdr-trial">{trialInfo === "premium" ? "✨ Premium" : trialInfo.startsWith("trial:") ? `🕐 ${trialInfo.split(":")[1]}d gratis` : "⚠️ Prueba vencida"}</div>
+        </div>
+      </div>
+      <div className="mot-card"><p>"{mot}"</p></div>
+      <div className="card">
+        <div className="card-title">🎯 Calorías de hoy</div>
+        <CalRing consumed={totals.calorias} target={metas.calorias} />
+        <div style={{ textAlign: "center", fontSize: "0.85rem", color: "var(--muted)", marginTop: "4px" }}>Quedan <span className="bold green">{Math.max(0, metas.calorias - totals.calorias)} kcal</span> para tu meta</div>
+        <div style={{ marginTop: "16px" }}>
+          <MacroBar label="🥩 Proteínas" consumed={totals.proteinas} target={metas.proteinas} color="#1AB87C" />
+          <MacroBar label="🌾 Carbohidratos" consumed={totals.carbohidratos} target={metas.carbohidratos} color="#FDCB6E" />
+          <MacroBar label="🥑 Grasas" consumed={totals.grasas} target={metas.grasas} color="#74B9FF" />
+        </div>
+      </div>
+      <div className="card">
+        <div className="card-title">🍽️ Mis comidas de hoy</div>
+        {MEALS.map(m => (
+          <div key={m.key} className="meal-row">
+            <div className="meal-ic">{m.ic}</div>
+            <div className="meal-info">
+              <div className="meal-nm">{m.label}</div>
+              <div className="meal-cal">{log[m.key] ? `${fmt(log[m.key].calorias_total)} kcal · ${log[m.key].alimentos?.slice(0,2).join(", ")}` : "Sin registrar"}</div>
+            </div>
+            <button className="meal-btn" onClick={() => onMeal(m.key)}>{log[m.key] ? "✏️" : "+"}</button>
+          </div>
+        ))}
+      </div>
+      <div className="card">
+        <div className="card-title">💧 Agua — {agua} / {vasosMeta} vasos</div>
+        <div className="glasses">{Array.from({ length: vasosMeta }, (_, i) => (<div key={i} className={`glass${i < agua ? " ok" : ""}`} onClick={() => { const n = i < agua ? i : i + 1; setAgua(n); const aq = load(SK.agua) || {}; aq[today()] = n; save(SK.agua, aq); }}>{i < agua ? "💧" : "○"}</div>))}</div>
+        <p className="tip mt8">Meta: {metas.agua.toFixed(1)} litros al día</p>
+      </div>
+      <div className="card">
+        <div className="card-title">📊 Tus metas diarias</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+          {[{ic:"🔥",v:fmt(metas.calorias),l:"kcal/día"},{ic:"🥩",v:fmt(metas.proteinas)+"g",l:"proteínas"},{ic:"🌾",v:fmt(metas.carbohidratos)+"g",l:"carbohidratos"},{ic:"🥑",v:fmt(metas.grasas)+"g",l:"grasas"}].map((s,i) => (<div key={i} className="nut-cell"><div style={{fontSize:"1.5rem"}}>{s.ic}</div><div className="nut-val">{s.v}</div><div className="nut-lbl">{s.l}</div></div>))}
+        </div>
+      </div>
+    </div>
+  );
+}
+function RegistrarComida({ mealType, perfil, onBack, onSave }) {
+  const [img, setImg] = useState(null), [b64, setB64] = useState(null), [mime, setMime] = useState("image/jpeg");
+  const [loading, setLoad] = useState(false), [result, setResult] = useState(null), [err, setErr] = useState(null);
+  const inputRef = useRef();
+  const LABELS = { desayuno: "Desayuno ☀️", almuerzo: "Almuerzo 🍽️", cena: "Cena 🌙", snack: "Snack 🍎" };
+  const handleFile = (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    setMime(file.type || "image/jpeg");
+    setImg(URL.createObjectURL(file));
+    const reader = new FileReader();
+    reader.onload = () => setB64(reader.result.split(",")[1]);
+    reader.readAsDataURL(file);
+    setResult(null); setErr(null);
+  };
+  const analyze = async () => {
+    if (!b64) return; setLoad(true); setErr(null);
+    try {
+      const res = await fetch("/.netlify/functions/analyze-food", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageBase64: b64, mediaType: mime, mealType: LABELS[mealType], userProfile: perfil }) });
+      if (!res.ok) throw new Error();
+      setResult(await res.json());
+    } catch { setErr("No pudimos analizar la foto. Intenta con otra imagen."); }
+    setLoad(false);
+  };
+  const sem = result ? (result.semaforo === "verde" ? "v" : result.semaforo === "amarillo" ? "a" : "r") : null;
+  const semTxt = { v: "✅ ¡Excelente elección!", a: "⚠️ Aceptable, puedes mejorar", r: "🔴 No recomendado para tu objetivo" };
+  return (
+    <div className="fade">
+      <div className="hdr"><div className="hdr-row"><div style={{ display: "flex", alignItems: "center" }}><button className="back-btn" onClick={onBack}>←</button><div className="hdr-logo">{LABELS[mealType]}</div></div></div></div>
+      <div style={{ padding: "12px 16px 24px" }}>
+        {!result && (
+          <div className="card">
+            <div className="card-title">📸 Foto de tu plato</div>
+            {!img ? (
+              <div className="upload-area" onClick={() => inputRef.current.click()}>
+                <div style={{ fontSize: "3rem" }}>📷</div>
+                <div style={{ fontWeight: 600, marginTop: "10px" }}>Toca para fotografiar o subir</div>
+                <div className="tip mt8">La IA analizará los alimentos y nutrientes</div>
+                <input ref={inputRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: "none" }} />
+              </div>
+            ) : (
+              <div>
+                <img src={img} alt="plato" className="preview-img" />
+                <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+                  <button className="btn btn-o btn-sm" onClick={() => { setImg(null); setB64(null); }}>🗑️ Cambiar</button>
+                  <button className="btn btn-p" onClick={analyze} style={{ flex: 1 }}>🔍 Analizar con IA</button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        {loading && <div className="card"><div className="loading"><div className="spinner" /><div style={{ fontWeight: 600 }}>Analizando tu plato...</div><div className="tip mt8">La IA identifica cada alimento 🥗</div></div></div>}
+        {err && <div className="card"><div style={{ color: "var(--red)", textAlign: "center", padding: "20px 0" }}><div style={{ fontSize: "2rem" }}>😕</div><div style={{ fontWeight: 600, marginTop: "8px" }}>{err}</div><button className="btn btn-s mt16" onClick={() => { setImg(null); setB64(null); setErr(null); }}>Intentar de nuevo</button></div></div>}
+        {result && (
+          <>
+            <div className="card">
+              {img && <img src={img} alt="plato" className="preview-img" style={{ marginBottom: "14px" }} />}
+              <div className="card-title">📊 Análisis nutricional</div>
+              <div className={`sem ${sem}`}>{semTxt[sem]}</div>
+              <div style={{ marginTop: "12px" }}><div style={{ fontSize: "0.88rem", fontWeight: 600, marginBottom: "6px" }}>🥘 Alimentos identificados:</div><div>{(result.alimentos || []).map((a, i) => <span key={i} className="food-tag">{a}</span>)}</div></div>
+              <div className="nut-grid">
+                <div className="nut-cell"><div style={{fontSize:"1.8rem"}}>🔥</div><div className="nut-val">{fmt(result.calorias_total)}</div><div className="nut-lbl">kcal</div></div>
+                <div className="nut-cell"><div style={{fontSize:"1.8rem"}}>🥩</div><div className="nut-val">{fmt(result.proteinas_g)}g</div><div className="nut-lbl">proteínas</div></div>
+                <div className="nut-cell"><div style={{fontSize:"1.8rem"}}>🌾</div><div className="nut-val">{fmt(result.carbohidratos_g)}g</div><div className="nut-lbl">carbohidratos</div></div>
+                <div className="nut-cell"><div style={{fontSize:"1.8rem"}}>🥑</div><div className="nut-val">{fmt(result.grasas_g)}g</div><div className="nut-lbl">grasas</div></div>
+              </div>
+              {result.comentario && <div style={{ background: "var(--green-lt)", borderRadius: "10px", padding: "12px", marginTop: "10px" }}><div style={{ fontWeight: 600, fontSize: "0.88rem", color: "var(--green-dk)", marginBottom: "4px" }}>💬 Comentario:</div><div style={{ fontSize: "0.9rem" }}>{result.comentario}</div></div>}
+              {result.sugerencia && <div style={{ background: "#FFF3CD", borderRadius: "10px", padding: "12px", marginTop: "10px" }}><div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#856404", marginBottom: "4px" }}>💡 Sugerencia:</div><div style={{ fontSize: "0.9rem" }}>{result.sugerencia}</div></div>}
+            </div>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button className="btn btn-o" style={{ width: "40%" }} onClick={() => { setResult(null); setImg(null); setB64(null); }}>🔄 Nueva foto</button>
+              <button className="btn btn-p" style={{ width: "60%" }} onClick={() => { saveMeal(mealType, result); onSave(); }}>✅ Guardar</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+function Progreso({ perfil }) {
+  const [pesos, setPesos] = useState(load(SK.pesos) || []);
+  const [nuevo, setNuevo] = useState(""), [showForm, setShowForm] = useState(false);
+  const addPeso = () => { if (!nuevo) return; const e = { fecha: today(), peso: parseFloat(nuevo) }; const u = [e, ...pesos].slice(0,30); setPesos(u); save(SK.pesos, u); setNuevo(""); setShowForm(false); };
+  const bmi = calcBMI({ ...perfil, peso: pesos[0]?.peso || perfil.peso }), bmiInf = bmiLabel(bmi);
+  const pesoInicial = pesos.length > 0 ? pesos[pesos.length-1].peso : perfil.peso;
+  const pesoActual  = pesos.length > 0 ? pesos[0].peso : perfil.peso;
+  const diff = (pesoActual - pesoInicial).toFixed(1);
+  return (
+    <div className="content fade">
+      <div className="hdr"><div className="hdr-row"><div className="hdr-logo">📊 Mi progreso</div><button className="btn btn-p btn-sm" onClick={() => setShowForm(true)} style={{ width: "auto" }}>+ Peso</button></div></div>
+      <div className="card">
+        <div className="card-title">⚖️ Tu peso actual</div>
+        <div style={{ textAlign: "center", padding: "8px 0" }}>
+          <div style={{ fontSize: "3rem", fontWeight: 800, color: "var(--green-dk)" }}>{pesoActual} kg</div>
+          <div style={{ fontSize: "0.88rem", color: "var(--muted)", marginTop: "4px" }}>{diff > 0 ? "+" : ""}{diff} kg desde que empezaste</div>
+        </div>
+        <div style={{ marginTop: "16px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.88rem", marginBottom: "6px" }}><span className="bold">IMC: {bmi}</span><span style={{ color: bmiInf.color, fontWeight: 700 }}>{bmiInf.label}</span></div>
+          <div className="bmi-bar"><div className="bmi-dot" style={{ left: bmiPos(bmi) + "%" }} /></div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--muted)" }}><span>Bajo peso</span><span>Normal</span><span>Sobrepeso</span><span>Obesidad</span></div>
+        </div>
+      </div>
+      <div className="card">
+        <div className="card-title">📅 Historial de peso</div>
+        {pesos.length === 0 ? (<div style={{ textAlign: "center", padding: "20px 0", color: "var(--muted)" }}><div style={{ fontSize: "2.5rem" }}>⚖️</div><div style={{ marginTop: "8px" }}>Aún no has registrado tu peso</div><button className="btn btn-s mt16" onClick={() => setShowForm(true)}>Registrar ahora</button></div>) : (pesos.slice(0,10).map((p,i) => (<div key={i} className="peso-item"><div><div style={{ fontWeight: 600 }}>{p.peso} kg</div><div style={{ fontSize: "0.82rem", color: "var(--muted)" }}>{new Date(p.fecha+"T12:00:00").toLocaleDateString("es-CO",{day:"numeric",month:"long"})}</div></div>{i > 0 && <div style={{ fontWeight: 700, color: p.peso < pesos[i-1]?.peso ? "var(--green)" : "var(--red)" }}>{p.peso < pesos[i-1]?.peso ? "↓" : "↑"} {Math.abs(p.peso - pesos[i-1]?.peso).toFixed(1)} kg</div>}</div>)))}
+      </div>
+      {showForm && (<div className="overlay" onClick={() => setShowForm(false)}><div className="sheet" onClick={e => e.stopPropagation()}><div style={{ fontWeight: 700, fontSize: "1.1rem", marginBottom: "16px" }}>⚖️ Registrar peso de hoy</div><input className="fi" type="number" step="0.1" placeholder="Ej: 68.5" value={nuevo} onChange={e => setNuevo(e.target.value)} /><p className="tip mt8">Pésate en ayunas para mayor precisión.</p><div style={{ display: "flex", gap: "10px", marginTop: "16px" }}><button className="btn btn-o" style={{ width: "40%" }} onClick={() => setShowForm(false)}>Cancelar</button><button className="btn btn-p" style={{ width: "60%" }} onClick={addPeso}>Guardar</button></div></div></div>)}
+    </div>
+  );
+}
+function PlanSemanal({ perfil, habitos }) {
+  const metas = calcMetas(perfil);
+  const PLAN = [
+    { dia: "Lunes",     meals: [{ic:"☀️",n:"Avena con frutas y nueces",cal:320},{ic:"🍽️",n:"Pollo a la plancha con arroz integral",cal:480},{ic:"🌙",n:"Sopa de verduras con pan integral",cal:280}]},
+    { dia: "Martes",    meals: [{ic:"☀️",n:"Huevos revueltos con tostadas y aguacate",cal:380},{ic:"🍽️",n:"Atún en ensalada con papa hervida",cal:420},{ic:"🌙",n:"Pollo en caldo con zanahoria",cal:260}]},
+    { dia: "Miércoles", meals: [{ic:"☀️",n:"Yogur griego con granola y fresas",cal:300},{ic:"🍽️",n:"Lentejas con arroz y plátano maduro",cal:500},{ic:"🌙",n:"Tortilla de verduras con queso",cal:290}]},
+    { dia: "Jueves",    meals: [{ic:"☀️",n:"Batido de banano, avena y leche",cal:340},{ic:"🍽️",n:"Salmón al horno con vegetales y quinoa",cal:520},{ic:"🌙",n:"Crema de brócoli con tostadas",cal:240}]},
+    { dia: "Viernes",   meals: [{ic:"☀️",n:"Pan integral con mantequilla de maní",cal:360},{ic:"🍽️",n:"Pollo en salsa de tomate con pasta integral",cal:490},{ic:"🌙",n:"Ensalada de garbanzos con aguacate",cal:310}]},
+    { dia: "Sábado",    meals: [{ic:"☀️",n:"Pancakes de avena con miel y frutos rojos",cal:380},{ic:"🍽️",n:"Res magra a la plancha con vegetales",cal:460},{ic:"🌙",n:"Tilapia al limón con ensalada verde",cal:280}]},
+    { dia: "Domingo",   meals: [{ic:"☀️",n:"Omelette de claras con espinaca",cal:290},{ic:"🍽️",n:"Pechuga de pollo al horno con puré de papa",cal:470},{ic:"🌙",n:"Sopa de pollo con verduras y arroz",cal:300}]},
+  ];
+  const [open, setOpen] = useState(new Date().getDay() === 0 ? 6 : new Date().getDay() - 1);
+  return (
+    <div className="content fade">
+      <div className="hdr"><div className="hdr-logo">🗓️ Plan semanal</div><div style={{ fontSize: "0.82rem", opacity: 0.85, marginTop: 2 }}>Personalizado para tu objetivo</div></div>
+      <div className="card" style={{ background: "linear-gradient(135deg,#1AB87C,#0D9E67)", color: "#fff" }}><div style={{ fontWeight: 700, marginBottom: "6px" }}>💡 Tu guía nutricional</div><div style={{ fontSize: "0.88rem", opacity: 0.92 }}>Meta diaria: <span style={{ fontWeight: 800 }}>{fmt(metas.calorias)} kcal</span> · Proteínas: {fmt(metas.proteinas)}g · Carbos: {fmt(metas.carbohidratos)}g · Grasas: {fmt(metas.grasas)}g</div></div>
+      {PLAN.map((d, i) => (
+        <div key={i} className="card" style={{ padding: "0" }}>
+          <div onClick={() => setOpen(open === i ? -1 : i)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", cursor: "pointer" }}>
+            <div><div style={{ fontWeight: 700 }}>{d.dia}</div><div style={{ fontSize: "0.82rem", color: "var(--muted)" }}>~{d.meals.reduce((a,m) => a+m.cal,0)} kcal</div></div>
+            <div style={{ fontSize: "1.2rem" }}>{open === i ? "▲" : "▼"}</div>
+          </div>
+          {open === i && (<div style={{ borderTop: "1px solid var(--border)", padding: "0 20px 16px" }}>{d.meals.map((m,j) => (<div key={j} className="meal-row" style={{ paddingLeft: 0 }}><div className="meal-ic">{m.ic}</div><div className="meal-info"><div className="meal-nm" style={{ fontSize: "0.88rem" }}>{m.n}</div><div className="meal-cal">{m.cal} kcal</div></div></div>))}</div>)}
+        </div>
+      ))}
+    </div>
+  );
+}
+function Paywall() {
+  return (
+    <div className="fade">
+      <div className="pw-hero"><div style={{ fontSize: "3rem", marginBottom: "12px" }}>🌟</div><div style={{ fontSize: "1.5rem", fontWeight: 800 }}>Tu prueba gratuita terminó</div><div style={{ opacity: 0.9, marginTop: "8px" }}>Continúa tu camino hacia una alimentación saludable</div></div>
+      <div style={{ padding: "24px 16px" }}>
+        <div className="card" style={{ textAlign: "center" }}><div style={{ fontSize: "0.88rem", color: "var(--muted)", marginBottom: "4px" }}>Suscripción mensual</div><div className="pw-price">$8.99</div><div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>USD por mes · Cancela cuando quieras</div><button className="btn btn-p mt16" onClick={() => window.location.href = CHECKOUT_URL}>🚀 Obtener NutriCoach Premium</button></div>
+        <div className="card"><div className="card-title">✨ Todo incluido en Premium</div>{[["📸","Análisis ilimitado de fotos con IA"],["🎯","Metas personalizadas de calorías y macros"],["📊","Seguimiento detallado de progreso"],["🗓️","Plan semanal de comidas"],["💧","Rastreador de hidratación"],["⚖️","Registro y gráfica de peso"]].map(([ic,t],i) => (<div key={i} className="pw-feat"><span style={{ fontSize: "1.4rem" }}>{ic}</span><span style={{ fontSize: "0.9rem" }}>{t}</span></div>))}</div>
+      </div>
+    </div>
+  );
+}
+function App() {
+  const [screen, setScreen] = useState(() => (!load(SK.fecha) || !load(SK.perfil)) ? "welcome" : "dashboard");
+  const [perfil, setPerfil] = useState(() => load(SK.perfil));
+  const [habitos, setHabitos] = useState(() => load(SK.habitos));
+  const [nav, setNav] = useState("dashboard");
+  const [mealType, setMeal] = useState(null);
+  const [agua, setAgua] = useState(() => { const aq = load(SK.agua) || {}; return aq[today()] || 0; });
+  const trial = trialStatus();
+  const startOnboarding = () => { if (!load(SK.fecha)) save(SK.fecha, Date.now()); setScreen("perfil"); };
+  const donePerfil = (p) => { const parsed = { ...p, edad: +p.edad, peso: +p.peso, estatura: +p.estatura }; setPerfil(parsed); save(SK.perfil, parsed); setScreen("habitos"); };
+  const doneHabitos = (h) => { setHabitos(h); save(SK.habitos, h); setScreen("dashboard"); setNav("dashboard"); };
+  const openMeal = (type) => { if (trial === "expired") { setScreen("paywall"); return; } setMeal(type); setScreen("meal"); };
+  const navTo = (tab) => { if (trial === "expired" && tab !== "dashboard") { setScreen("paywall"); return; } setNav(tab); setScreen(tab); };
+  const NAV = [{key:"dashboard",ic:"🏠",label:"Inicio"},{key:"plan",ic:"🗓️",label:"Plan"},{key:"progreso",ic:"📊",label:"Progreso"},{key:"perfil_edit",ic:"👤",label:"Perfil"}];
+  if (screen === "welcome") return <Welcome onStart={startOnboarding} />;
+  if (screen === "perfil")  return <FormPerfil onNext={donePerfil} initial={perfil} />;
+  if (screen === "habitos") return <FormHabitos onNext={doneHabitos} onBack={() => setScreen("perfil")} perfilNombre={perfil?.nombre || ""} />;
+  if (screen === "paywall") return <Paywall />;
+  if (screen === "meal")    return <RegistrarComida mealType={mealType} perfil={perfil} onBack={() => { setScreen("dashboard"); setNav("dashboard"); }} onSave={() => { setScreen("dashboard"); setNav("dashboard"); }} />;
+  return (
+    <div className="app">
+      {screen === "dashboard" && perfil && <Dashboard perfil={perfil} onMeal={openMeal} trialInfo={trial} agua={agua} setAgua={setAgua} />}
+      {screen === "plan" && perfil && <PlanSemanal perfil={perfil} habitos={habitos} />}
+      {screen === "progreso" && perfil && <Progreso perfil={perfil} />}
+      {screen === "perfil_edit" && (
+        <div className="content fade">
+          <div className="hdr"><div className="hdr-logo">👤 Mi perfil</div></div>
+          <div className="card"><div className="card-title">Tus datos</div>{perfil && Object.entries({"Nombre":perfil.nombre,"Edad":perfil.edad+" años","Género":perfil.genero,"Peso":perfil.peso+" kg","Estatura":perfil.estatura+" cm","Actividad":perfil.actividad,"Objetivo":perfil.objetivo}).map(([k,v]) => (<div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--border)", fontSize: "0.95rem" }}><span style={{ color: "var(--muted)" }}>{k}</span><span style={{ fontWeight: 600 }}>{v}</span></div>))}<button className="btn btn-s mt16" onClick={() => setScreen("perfil")}>✏️ Editar perfil</button></div>
+          <div className="card"><button className="btn" style={{ background: "#FFE9E9", color: "var(--red)" }} onClick={() => { if (confirm("¿Reiniciar app? Se borrarán todos tus datos.")) { Object.values(SK).forEach(k => localStorage.removeItem(k)); window.location.reload(); } }}>🗑️ Reiniciar app</button></div>
+        </div>
+      )}
+      <nav className="bnav">{NAV.map(n => (<button key={n.key} className={`bni${nav === n.key ? " on" : ""}`} onClick={() => navTo(n.key)}><span className="bni-ic">{n.ic}</span><span>{n.label}</span></button>))}</nav>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

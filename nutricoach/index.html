@@ -381,7 +381,7 @@ function RegistrarComida({ mealType, perfil, onBack, onSave }) {
   const analyze = async () => {
     if (!b64) return; setLoad(true); setErr(null);
     try {
-      const res = await fetch("/.netlify/functions/analyze-food", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageBase64: b64, mediaType: mime, mealType: LABELS[mealType], userProfile: perfil }) });
+      const res = await fetch("/api/analyze-food", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageBase64: b64, mediaType: mime, mealType: LABELS[mealType], userProfile: perfil }) });
       if (!res.ok) throw new Error();
       setResult(await res.json());
     } catch { setErr("No pudimos analizar la foto. Intenta con otra imagen."); }

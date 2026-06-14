@@ -409,12 +409,12 @@ function RegistrarComida({ mealType, perfil, onBack, onSave }) {
             <div className="card-title">📸 Foto de tu plato</div>
             {!img ? (
               <div className="upload-area">
-                <div style={{ fontSize: "3rem" }}>🍽️</div>
+                <div style={{ fontSize: "2.5rem" }}>🍽️</div>
                 <div style={{ fontWeight: 600, marginTop: "10px" }}>¿Cómo quieres subir la foto?</div>
                 <div className="tip mt8">La IA analizará los alimentos y nutrientes</div>
-                <div style={{ display: "flex", gap: "10px", marginTop: "16px", justifyContent: "center" }}>
-                  <button className="btn btn-o" style={{ width: "44%", fontSize: "0.85rem" }} onClick={() => inputRef.current.click()}>📷 Cámara</button>
-                  <button className="btn btn-p" style={{ width: "44%", fontSize: "0.85rem" }} onClick={() => galleryRef.current.click()}>🖼️ Galería</button>
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "16px" }}>
+                  <button className="btn btn-o" style={{ width: "100%", fontSize: "0.9rem" }} onClick={() => inputRef.current.click()}>Tomar foto con camara</button>
+                  <button className="btn btn-p" style={{ width: "100%", fontSize: "0.9rem" }} onClick={() => galleryRef.current.click()}>Subir desde galeria</button>
                 </div>
                 <input ref={inputRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: "none" }} />
                 <input ref={galleryRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />

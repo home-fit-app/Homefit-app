@@ -378,7 +378,7 @@ function Dashboard({ perfil, onMeal, trialInfo, agua, setAgua }) {
 function RegistrarComida({ mealType, perfil, onBack, onSave }) {
   const [img, setImg] = useState(null), [b64, setB64] = useState(null), [mime, setMime] = useState("image/jpeg");
   const [loading, setLoad] = useState(false), [result, setResult] = useState(null), [err, setErr] = useState(null);
-  const inputRef = useRef();
+  const inputRef = useRef(), galleryRef = useRef();
   const LABELS = { desayuno: "Desayuno ☀️", almuerzo: "Almuerzo 🍽️", cena: "Cena 🌙", snack: "Snack 🍎" };
   const handleFile = (e) => {
     const file = e.target.files[0]; if (!file) return;
@@ -408,11 +408,16 @@ function RegistrarComida({ mealType, perfil, onBack, onSave }) {
           <div className="card">
             <div className="card-title">📸 Foto de tu plato</div>
             {!img ? (
-              <div className="upload-area" onClick={() => inputRef.current.click()}>
-                <div style={{ fontSize: "3rem" }}>📷</div>
-                <div style={{ fontWeight: 600, marginTop: "10px" }}>Toca para fotografiar o subir</div>
+              <div className="upload-area">
+                <div style={{ fontSize: "3rem" }}>🍽️</div>
+                <div style={{ fontWeight: 600, marginTop: "10px" }}>¿Cómo quieres subir la foto?</div>
                 <div className="tip mt8">La IA analizará los alimentos y nutrientes</div>
+                <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
+                  <button className="btn btn-o" style={{ flex: 1 }} onClick={() => inputRef.current.click()}>📷 Cámara</button>
+                  <button className="btn btn-p" style={{ flex: 1 }} onClick={() => galleryRef.current.click()}>🖼️ Galería</button>
+                </div>
                 <input ref={inputRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: "none" }} />
+                <input ref={galleryRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
               </div>
             ) : (
               <div>

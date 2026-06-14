@@ -413,8 +413,8 @@ function RegistrarComida({ mealType, perfil, onBack, onSave }) {
                 <div style={{ fontWeight: 600, marginTop: "10px" }}>¿Cómo quieres subir la foto?</div>
                 <div className="tip mt8">La IA analizará los alimentos y nutrientes</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "16px" }}>
-                  <button className="btn btn-o" style={{ width: "100%", fontSize: "0.9rem" }} onClick={() => inputRef.current.click()}>Tomar foto con camara</button>
-                  <button className="btn btn-p" style={{ width: "100%", fontSize: "0.9rem" }} onClick={() => galleryRef.current.click()}>Subir desde galeria</button>
+                  <button className="btn btn-o" style={{ width: "100%", fontSize: "0.82rem", whiteSpace: "nowrap" }} onClick={() => inputRef.current.click()}>📷 Tomar foto</button>
+                  <button className="btn btn-p" style={{ width: "100%", fontSize: "0.82rem", whiteSpace: "nowrap" }} onClick={() => galleryRef.current.click()}>🖼️ Subir de galería</button>
                 </div>
                 <input ref={inputRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: "none" }} />
                 <input ref={galleryRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
